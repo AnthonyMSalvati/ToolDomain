@@ -16,7 +16,8 @@ public class ToolSearch {
 
     }
 
-    public ToolSearch(String url, String password, String username, String ssl) throws SQLException {
+    public ToolSearch(String url, String password, String username, String ssl) throws SQLException, ClassNotFoundException {
+        Class.forName("org.postgresql.Driver");
         this.connection = configure(url, password, username, ssl);
         processResult(search(""));
     }
@@ -25,7 +26,7 @@ public class ToolSearch {
         Properties properties = new Properties();
         properties.setProperty("user", username);
         properties.setProperty("password", pwd);
-        properties.setProperty("ssl", ssl);
+        properties.setProperty("ssl", "require");
 
         Connection connection = DriverManager.getConnection(url,properties);
         return connection;
@@ -36,24 +37,24 @@ public class ToolSearch {
         ResultSet result = null;
 
         //test statement for now to query database
-        result = statement.executeQuery("SELECT * FROM USER");
+        result = statement.executeQuery("SELECT * FROM Owner");
         return result;
     }
 
     private void processResult(ResultSet resultSet) throws SQLException {
         while (resultSet.next())
         {
-            String email = resultSet.getString("Email");
-            Date createDate = resultSet.getDate("Creation Date");
-            String username = resultSet.getString("Username");
-            String password = resultSet.getString("Password");
-            String firstName = resultSet.getString("First Name");
-            String lastName = resultSet.getString("Last Name");
-            Date lastAccess = resultSet.getDate("Last Access Date");
+            String email = resultSet.getString(1);
+            /*Date createDate = resultSet.getDate(1);
+            String username = resultSet.getString(2);
+            String password = resultSet.getString(3);
+            String firstName = resultSet.getString(4);
+            String lastName = resultSet.getString(5);
+            Date lastAccess = resultSet.getDate(6);*/
 
             System.out.println("email = " + email);
-            System.out.println("Create Date = " + createDate.toString());
-            System.out.println("username = " + username);
+            //System.out.println("Create Date = " + createDate.toString());
+            //System.out.println("username = " + username);
 
 
         }
