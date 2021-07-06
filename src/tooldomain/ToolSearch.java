@@ -37,7 +37,7 @@ public class ToolSearch {
         ResultSet result = null;
 
         //test statement for now to query database
-        result = statement.executeQuery("SELECT * FROM Owner");
+        result = statement.executeQuery("SELECT * FROM \"Owner\"");
         return result;
     }
 
