@@ -3,6 +3,11 @@ package tooldomain;
 import java.sql.*;
 import java.util.Properties;
 
+/**
+ * The Request class holds all the methods for the user
+ * to make,accept,decline and remove a request
+ * @author: Gianna Borgo </gmb5005@rit.edu>
+ */
 public class Request {
 
     private Connection connection;
@@ -10,7 +15,7 @@ public class Request {
     public Request(String url, String password, String username, String ssl) throws SQLException, ClassNotFoundException{
         Class.forName("org.postgresql.Driver");
         this.connection = configure(url, password, username, ssl);
-        AcceptRequest("test1@rit.edu", "1");
+        DeleteRequest("test125@rit.edu", "145");
     }
 
     /**
@@ -101,6 +106,17 @@ public class Request {
     public void ReturnTool(String email, String barcode ) throws  SQLException{
         Statement statement = this.connection.createStatement();
         statement.execute("Update \"Owner\" set \"Email\" = '" + email + "' where \"Barcode\" = '" + barcode + "'");
+    }
+
+    /**
+     * Removes a request from the table
+     * @param email: email of user who made the request
+     * @param barcode: Barcode of tool they requested
+     * @throws SQLException
+     */
+    public void DeleteRequest(String email, String barcode) throws SQLException{
+        Statement statement = this.connection.createStatement();
+        statement.execute("Delete from \"Request\" where \"Email\" = '" + email + "' AND \"Barcode\" = '" + barcode + "'");
     }
 
 }
