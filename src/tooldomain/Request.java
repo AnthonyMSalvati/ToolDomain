@@ -15,7 +15,7 @@ public class Request {
     public Request(String url, String password, String username, String ssl) throws SQLException, ClassNotFoundException{
         Class.forName("org.postgresql.Driver");
         this.connection = configure(url, password, username, ssl);
-        DeleteRequest("test125@rit.edu", "145");
+        MakeRequest("test125@rit.edu", "145", 4,"07/11/21");
     }
 
     /**
@@ -47,8 +47,18 @@ public class Request {
      */
     public void MakeRequest( String email, String barcode, int duration, String dateRequired ) throws SQLException {
         Statement statement = this.connection.createStatement();
-        statement.executeQuery("INSERT into \"Request\" (\"Email\", \"Barcode\", \"Duration\", \"DateRequired\") " +
-                "values ( '" + email + "','"+ barcode + "'," + duration + ",'" + dateRequired + "')");
+        try {
+            statement.executeQuery("select * from \"Tool\" where \"Barcode\" = '"+ barcode + "' And \"Shareable\" = 'true'");
+            try {
+                statement.executeQuery("select * from \"Borrowed\" where \\\"Barcode\\\" = '\"+ barcode + \"'");
+                System.out.println("Tool is currently being borrowed request again at a later date");
+            }catch (SQLException e) {
+                statement.execute("INSERT into \"Request\" (\"Email\", \"Barcode\", \"Duration\", \"DateRequired\") " +
+                        "values ( '" + email + "','" + barcode + "'," + duration + ",'" + dateRequired + "')");
+            }
+        }catch ( SQLException e){
+            System.out.println("The Tool You Have Requested isn't Shareable or doesn't exist");
+        }
     }
 
     /**
@@ -59,10 +69,16 @@ public class Request {
      */
     public void AcceptRequest( String email, String barcode ) throws SQLException {
         Statement statement = this.connection.createStatement();
+        System.out.println("Processing accept request...");
         AcceptDecline( email, barcode);
-        statement.execute("UPDATE \"Request\" set \"Status\" = 'Accepted' where \"Email\" = '"
-                + email + "' AND \"Barcode\" = '" + barcode + "'");
-        statement.execute("UPDATE \"Owner\" set \"Email\" = '" + email + "' where \"Barcode\" = '" + barcode + "'");
+        try {
+            statement.execute("UPDATE \"Request\" set \"Status\" = 'Accepted' where \"Email\" = '"
+                    + email + "' AND \"Barcode\" = '" + barcode + "'");
+            statement.execute("INSERT into \"Borrowed\" (\"Email\", \"Barcode\") " +
+                    "values ( '" + email + "','" + barcode + "')");
+        }catch (SQLException e) {
+            System.out.println("Error accepting request");
+        }
     }
 
     /**
@@ -74,15 +90,20 @@ public class Request {
      */
     public  void AcceptDecline( String email, String barcode ) throws SQLException{
         Statement statement = this.connection.createStatement();
-        ResultSet result = statement.executeQuery("Select * from \"Request\" where \"Email\" = '"
-                + email + "' AND \"Barcode\" = '" + barcode + "'");
-        if(result.next()){
-            String date = result.getString("DateRequired");
-            int dur = Integer.parseInt(result.getString("Duration"));
-            dur += Integer.parseInt(date.substring(9));
-            String returnDate = date.substring(0,9) + dur;
-            statement.execute("UPDATE \"Request\" set \"Status\" = 'Declined' where \"DateRequired\" < '"
-                    + returnDate +"' And \"Status\" = 'Pending' And \"Barcode\" = '" + barcode + "'");
+        System.out.println("Declining all conflicting request...");
+        try {
+            ResultSet result = statement.executeQuery("Select * from \"Request\" where \"Email\" = '"
+                    + email + "' AND \"Barcode\" = '" + barcode + "'");
+            if (result.next()) {
+                String date = result.getString("DateRequired");
+                int dur = Integer.parseInt(result.getString("Duration"));
+                dur += Integer.parseInt(date.substring(9));
+                String returnDate = date.substring(0, 9) + dur;
+                statement.execute("UPDATE \"Request\" set \"Status\" = 'Declined' where \"DateRequired\" < '"
+                        + returnDate + "' And \"Status\" = 'Pending' And \"Barcode\" = '" + barcode + "'");
+            }
+        }catch (SQLException e){
+            System.out.println("No conflicting request found");
         }
     }
 
@@ -94,18 +115,28 @@ public class Request {
      */
     public void DeclineRequest( String email, String barcode ) throws SQLException {
         Statement statement = this.connection.createStatement();
-        statement.execute("UPDATE \"Request\" set \"Status\" = 'Declined' where \"Email\" = '" + email + "' AND \"Barcode\" = '" + barcode + "'");
+        try {
+            statement.executeQuery("select * from \"Request\" where \"Barcode\" = '"+ barcode + "' And \"email\" = '" + email + "'");
+            statement.execute("UPDATE \"Request\" set \"Status\" = 'Declined' where \"Email\" = '" + email + "' AND \"Barcode\" = '" + barcode + "'");
+        }catch (SQLException e){
+            System.out.println("ERROR: No request with email and barcode combination");
+        }
+
     }
 
     /**
      * return tool to owner after sharing is completed
-     * @param email: email of the tools original owner
+     * @param email: email of person borrowing the tool
      * @param barcode: barcode of the tool
      * @throws SQLException
      */
     public void ReturnTool(String email, String barcode ) throws  SQLException{
         Statement statement = this.connection.createStatement();
-        statement.execute("Update \"Owner\" set \"Email\" = '" + email + "' where \"Barcode\" = '" + barcode + "'");
+        try {
+            statement.execute("Delete from \"Borrow\" where \"Email\" = '" + email + "' AND \"Barcode\" = '" + barcode + "'");
+        }catch (SQLException e){
+            System.out.println("ERROR: returning tool");
+        }
     }
 
     /**
@@ -116,7 +147,11 @@ public class Request {
      */
     public void DeleteRequest(String email, String barcode) throws SQLException{
         Statement statement = this.connection.createStatement();
-        statement.execute("Delete from \"Request\" where \"Email\" = '" + email + "' AND \"Barcode\" = '" + barcode + "'");
+        try {
+            statement.execute("Delete from \"Request\" where \"Email\" = '" + email + "' AND \"Barcode\" = '" + barcode + "'");
+        }catch (SQLException e){
+            System.out.println("ERROR: deleting tool request");
+        }
     }
 
 }
