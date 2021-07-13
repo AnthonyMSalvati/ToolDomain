@@ -4,15 +4,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.io.InputStreamReader;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Date;
 
 
 public class Main {
@@ -32,8 +28,6 @@ public class Main {
         displayInitialMessage();
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
-
-
         String userInput = scanner.nextLine();
         while (!userLoggedIn){
             int passwordAttempts = 0;
@@ -60,7 +54,6 @@ public class Main {
                         passwordVerified = true;
                         userLoggedIn = true;
                         System.out.println(String.format("Login Successful! Welcome %s", userName));
-                        //continue;
                     }
                     else {
                         passwordAttempts++;
@@ -81,6 +74,7 @@ public class Main {
                 }
             }
         }
+        Application application = new Application();
 
     }
 
