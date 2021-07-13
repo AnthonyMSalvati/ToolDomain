@@ -26,10 +26,11 @@ public class Main {
 
         displayInitialMessage();
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
-        String userInput = scanner.nextLine();
         while (!userLoggedIn){
             int passwordAttempts = 0;
             boolean passwordVerified = false;
+            String userInput = scanner.nextLine();
+
             while (!(userInput.equals("1") || userInput.equals("2"))){
                 System.out.println("Unexpected input. Please input either 1 or 2.");
                 userInput = scanner.nextLine();
@@ -39,8 +40,8 @@ public class Main {
                 String userName = scanner.nextLine();
                 String query = String.format("SELECT * FROM \"User\" WHERE \"Username\" = \'%s\'", userName);
                 ResultSet result = connection.createStatement().executeQuery(query);
-                result.next();
-                if (!result.getString("Username").equals(userName))
+
+                if (!result.next())
                 {
                     System.out.println("Username not found. Please press 2 to create an account before continuing.");
                     continue;
