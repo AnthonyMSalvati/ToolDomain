@@ -15,7 +15,7 @@ public class Request {
     public Request(String url, String password, String username, String ssl) throws SQLException, ClassNotFoundException{
         Class.forName("org.postgresql.Driver");
         this.connection = configure(url, password, username, ssl);
-        MakeRequest("test125@rit.edu", "145", 4,"07/11/21");
+        MakeRequest("test175@rit.edu", "1", 4,"07/11/21");
     }
 
     /**
@@ -47,18 +47,26 @@ public class Request {
      */
     public void MakeRequest( String email, String barcode, int duration, String dateRequired ) throws SQLException {
         Statement statement = this.connection.createStatement();
+        //makes sure tool is shareable and exists
         try {
-            statement.executeQuery("select * from \"Tool\" where \"Barcode\" = '"+ barcode + "' And \"Shareable\" = 'true'");
+            statement.executeQuery("select * from \"Tool\" where \"Barcode\" = '"+ barcode + "' AND \"Shareable\" = 'true'");
+            //makes sure the tool isn't already borrowed
             try {
                 statement.executeQuery("select * from \"Borrowed\" where \\\"Barcode\\\" = '\"+ barcode + \"'");
                 System.out.println("Tool is currently being borrowed request again at a later date");
             }catch (SQLException e) {
-                statement.execute("INSERT into \"Request\" (\"Email\", \"Barcode\", \"Duration\", \"DateRequired\") " +
-                        "values ( '" + email + "','" + barcode + "'," + duration + ",'" + dateRequired + "')");
+                try {
+                    statement.execute("INSERT into \"Request\" (\"Email\", \"Barcode\", \"Duration\", \"DateRequired\") " +
+                            "values ( '" + email + "','" + barcode + "'," + duration + ",'" + dateRequired + "')");
+                }catch (SQLException i){
+                    System.out.println("You have already requested that tool");
+                }
+
             }
         }catch ( SQLException e){
             System.out.println("The Tool You Have Requested isn't Shareable or doesn't exist");
         }
+        statement.close();
     }
 
     /**
@@ -79,6 +87,7 @@ public class Request {
         }catch (SQLException e) {
             System.out.println("Error accepting request");
         }
+        statement.close();
     }
 
     /**
@@ -105,6 +114,7 @@ public class Request {
         }catch (SQLException e){
             System.out.println("No conflicting request found");
         }
+        statement.close();
     }
 
     /**
@@ -121,7 +131,7 @@ public class Request {
         }catch (SQLException e){
             System.out.println("ERROR: No request with email and barcode combination");
         }
-
+        statement.close();
     }
 
     /**
@@ -137,6 +147,7 @@ public class Request {
         }catch (SQLException e){
             System.out.println("ERROR: returning tool");
         }
+        statement.close();
     }
 
     /**
@@ -152,6 +163,7 @@ public class Request {
         }catch (SQLException e){
             System.out.println("ERROR: deleting tool request");
         }
+        statement.close();
     }
 
 }
