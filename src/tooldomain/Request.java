@@ -12,29 +12,13 @@ public class Request {
 
     private Connection connection;
 
-    public Request(String url, String password, String username, String ssl) throws SQLException, ClassNotFoundException{
-        Class.forName("org.postgresql.Driver");
-        this.connection = configure(url, password, username, ssl);
-        MakeRequest("test175@rit.edu", "1", 4,"07/11/21");
-    }
-
     /**
-     * connects to the database server
-     * @param url: server url
-     * @param pwd: password
-     * @param username: the user's username
-     * @param ssl
-     * @return connection
+     * Constructor for request class gets the connection t the database
+     * @param connection: to connect to database
      * @throws SQLException
      */
-    private Connection configure(String url, String pwd, String username, String ssl) throws SQLException {
-        Properties properties = new Properties();
-        properties.setProperty("user", username);
-        properties.setProperty("password", pwd);
-        properties.setProperty("ssl", "require *");
-
-        Connection connection = DriverManager.getConnection(url,properties);
-        return connection;
+    public Request( Connection connection) throws SQLException {
+        this.connection = connection;
     }
 
     /**
@@ -165,5 +149,57 @@ public class Request {
         }
         statement.close();
     }
+
+    /**
+     * Gets all request for tools made by user
+     * @param email: user email
+     * @throws SQLException
+     */
+    public void getRequestByYou( String email ) throws SQLException {
+        Statement statement = this.connection.createStatement();
+        try {
+            ResultSet result = statement.executeQuery("SELECT * from \"Request\" where \"Email\" = '" + email + "'");
+            resultPrint(result);
+        }catch (SQLException e){
+            System.out.println("No results found with your email");
+        }
+        statement.close();
+    }
+
+    /**
+     * Gets all request for tools owned by user
+     * @param email: user email
+     * @throws SQLException
+     */
+    public void getRequestForYou( String email ) throws SQLException {
+        Statement statement = this.connection.createStatement();
+        try{
+            ResultSet result = statement.executeQuery("SELECT * from \"Request\" where \"Barcode\" =" +
+                    "( SELECT \"Barcode\" from \"Owner\" where \"Owner\".\"Email\" = '" + email + "')");
+            resultPrint(result);
+        }catch (SQLException e){
+            System.out.println("No request for your tools");
+        }
+    }
+
+    /**
+     * Prints out results in understandable format
+     * @param resultSet: the result return from query
+     * @throws SQLException
+     */
+    private void resultPrint( ResultSet resultSet) throws SQLException {
+        ResultSetMetaData rsmd = resultSet.getMetaData();
+        int columnsNumber = rsmd.getColumnCount();
+        while (resultSet.next()) {
+            for (int i = 1; i <= columnsNumber; i++) {
+                if (i > 1) System.out.print(",  ");
+                String columnValue = resultSet.getString(i);
+                System.out.print( rsmd.getColumnName(i) + ": " + columnValue);
+            }
+            System.out.println();
+
+        }
+    }
+
 
 }

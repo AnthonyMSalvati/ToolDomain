@@ -71,22 +71,51 @@ public class Application {
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
+        String order ="";
 
         switch (Integer.parseInt(input)){
             case (1) -> {
                 System.out.println("Please enter the barcode of the tool you would like to find: ");
                 input = scanner.nextLine();
-                ToolSearch search = new ToolSearch(input, "Barcode");
+                boolean hasSpecified = false;
+                while (!hasSpecified){
+                    System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order?");
+                    order = scanner.nextLine();
+                    if (!(order.equals("ASC") || order.equals("DESC"))){
+                        System.out.println("Please specify either ASC or DESC.");
+                    }
+                    else hasSpecified = true;
+                }
+
+                ToolSearch search = new ToolSearch(input, "Barcode", order);
             }
             case (2) -> {
                 System.out.println("Please enter the category you would like to search within: ");
                 input = scanner.nextLine();
-                ToolSearch search = new ToolSearch(input, "Category");
+                boolean hasSpecified = false;
+                while (!hasSpecified){
+                    System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order?");
+                    order = scanner.nextLine();
+                    if (!(order.equals("ASC") || order.equals("DESC"))){
+                        System.out.println("Please specify either ASC or DESC.");
+                    }
+                    else hasSpecified = true;
+                }
+                ToolSearch search = new ToolSearch(input, "Category", order);
             }
             case (3) -> {
                 System.out.println("Please enter the name of the tool you would like to find: ");
                 input = scanner.nextLine();
-                ToolSearch search = new ToolSearch(input, "Name");
+                boolean hasSpecified = false;
+                while (!hasSpecified){
+                    System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order (by name)?");
+                    order = scanner.nextLine();
+                    if (!(order.equals("ASC") || order.equals("DESC"))){
+                        System.out.println("Please specify either ASC or DESC.");
+                    }
+                    else hasSpecified = true;
+                }
+                ToolSearch search = new ToolSearch(input, "Name", order);
             }
             case (4) -> {
                 runApplication();
@@ -98,8 +127,67 @@ public class Application {
         System.out.println("list");
     }
 
-    public void manageRequests(){
-        System.out.println("requests");
+    /**
+     * Prints out the request options and
+     * manages their input
+     */
+    public void manageRequests() throws SQLException, ClassNotFoundException {
+        System.out.println("Manage Request");
+        System.out.println("1. Make Request \t 5. View request for your tools");
+        System.out.println("2. Cancel Request \t 6. View your request");
+        System.out.println("3. Accept Request \t 7. Return a tool");
+        System.out.println("4. Decline Request \t 8. Return to main menu");
+
+        Scanner scanner = new Scanner(new InputStreamReader(System.in));
+        String input = scanner.nextLine();
+        System.out.println("What's your email?");
+        String email = scanner.nextLine();
+
+        Request request = new Request(Main.getConnection());
+        switch (Integer.parseInt(input)){
+            case (1) -> {
+                System.out.println("What's the barcode of the tool you wish to borrow?");
+                input = scanner.nextLine();
+                System.out.println("What date do you required the tool by? (mm/dd/yyyy)");
+                String dateRequired = scanner.nextLine();
+                System.out.println("How long do you need the tool for?(numbers only)");
+                int duration = scanner.nextInt();
+                request.MakeRequest(email, input, duration, dateRequired);
+            }
+            case (2) -> {
+                System.out.println("What's the barcode of the tool of the request you wish to cancel?");
+                input = scanner.nextLine();
+                request.DeleteRequest(email, input);
+            }
+            case (3) -> {
+                System.out.println("What's the username of user who requested the tool?");
+                input = scanner.nextLine();
+                System.out.println("What's the barcode of the tool the user requested?");
+                String barcode = scanner.nextLine();
+                request.AcceptRequest(input, barcode);
+            }
+            case (4) -> {
+                System.out.println("What's the username of user who requested the tool?");
+                input = scanner.nextLine();
+                System.out.println("What's the barcode of the tool the user requested?");
+                String barcode = scanner.nextLine();
+                request.DeclineRequest(input, barcode);
+            }
+            case (5) -> {
+                request.getRequestForYou(email);
+            }
+            case (6) -> {
+                request.getRequestByYou(email);
+            }
+            case (7) -> {
+                System.out.println("Whats the barcode of the tool you wish to return?");
+                input = scanner.nextLine();
+                request.ReturnTool(email,input);
+            }
+            case (8) -> {
+                runApplication();
+            }
+        }
     }
 
 }

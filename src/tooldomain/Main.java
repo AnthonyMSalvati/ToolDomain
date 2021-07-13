@@ -17,7 +17,6 @@ public class Main {
     private static boolean userLoggedIn;
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        //Request r = new Request("jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a", "Hoh2saikaequeic5piut", "p32001a", "true");
         Class.forName("org.postgresql.Driver");
         connection = new DatabaseConnection(
                 "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
@@ -26,12 +25,12 @@ public class Main {
                 "true" ).getConnection();
 
         displayInitialMessage();
-
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
-        String userInput = scanner.nextLine();
         while (!userLoggedIn){
             int passwordAttempts = 0;
             boolean passwordVerified = false;
+            String userInput = scanner.nextLine();
+
             while (!(userInput.equals("1") || userInput.equals("2"))){
                 System.out.println("Unexpected input. Please input either 1 or 2.");
                 userInput = scanner.nextLine();
@@ -41,8 +40,8 @@ public class Main {
                 String userName = scanner.nextLine();
                 String query = String.format("SELECT * FROM \"User\" WHERE \"Username\" = \'%s\'", userName);
                 ResultSet result = connection.createStatement().executeQuery(query);
-                result.next();
-                if (!result.getString("Username").equals(userName))
+
+                if (!result.next())
                 {
                     System.out.println("Username not found. Please press 2 to create an account before continuing.");
                     continue;
@@ -75,8 +74,9 @@ public class Main {
             }
         }
         Application application = new Application();
-
         connection.close();
+
+
     }
 
     public static void displayInitialMessage() {
@@ -171,4 +171,7 @@ public class Main {
         }
     }
 
+    public static Connection getConnection() {
+        return connection;
+    }
 }
