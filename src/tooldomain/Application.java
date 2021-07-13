@@ -34,22 +34,18 @@ public class Application {
                 case (1) -> {
                     manageTools();
                     onApplicationMenu = false;
-                    break;
                 }
                 case (2) -> {
                     searchForTools();
                     onApplicationMenu = false;
-                    break;
                 }
                 case (3) -> {
                     viewToolList();
                     onApplicationMenu = false;
-                    break;
                 }
                 case (4) -> {
                     manageRequests();
                     onApplicationMenu = false;
-                    break;
                 }
                 case (5) -> {
                     System.out.println("Thank you! Have a wonderful day!");
