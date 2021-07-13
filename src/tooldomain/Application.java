@@ -76,17 +76,17 @@ public class Application {
             case (1) -> {
                 System.out.println("Please enter the barcode of the tool you would like to find: ");
                 input = scanner.nextLine();
-                ToolSearch search = new ToolSearch(input, "barcode");
+                ToolSearch search = new ToolSearch(input, "Barcode");
             }
             case (2) -> {
                 System.out.println("Please enter the category you would like to search within: ");
                 input = scanner.nextLine();
-                ToolSearch search = new ToolSearch(input, "category");
+                ToolSearch search = new ToolSearch(input, "Category");
             }
             case (3) -> {
                 System.out.println("Please enter the name of the tool you would like to find: ");
                 input = scanner.nextLine();
-                ToolSearch search = new ToolSearch(input, "name");
+                ToolSearch search = new ToolSearch(input, "Name");
             }
             case (4) -> {
                 runApplication();
