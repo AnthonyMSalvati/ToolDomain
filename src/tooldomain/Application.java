@@ -135,9 +135,11 @@ public class Application {
                 "p32001a",
                 "true" ).getConnection();
 
+        System.out.println("------------------------------");
         System.out.println("What would you like to search?");
-        System.out.println("-----------------------------");
-        System.out.println("1. Available Tools \t 2. Lent tools \t 3. Borrowed Tools");
+        System.out.println("------------------------------");
+        System.out.println("1. Available Tools \t 2. Lent tools");
+        System.out.println("3. Borrowed Tools");
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
@@ -145,7 +147,7 @@ public class Application {
         switch (Integer.parseInt(input)){
             case (1) -> {
                 System.out.println("Available Tools");
-                System.out.println("---------------------");
+                System.out.println("---------------");
                 PreparedStatement state = connection.prepareStatement("SELECT t.*, CTID " +
                         "FROM public.\"Tool\" t " + "ORDER BY" + "Name" +
                         "LIMIT 5013");
@@ -157,7 +159,7 @@ public class Application {
             }
             case (2) -> {
                 System.out.println("Available Tools");
-                System.out.println("---------------------");
+                System.out.println("---------------");
                 PreparedStatement state = connection.prepareStatement("SELECT t.*, CTID " +
                         "FROM public.\"Tool\" t " +
                         "LIMIT 5013");
@@ -169,7 +171,7 @@ public class Application {
             }
             case (3) -> {
                 System.out.println("Available Tools");
-                System.out.println("---------------------");
+                System.out.println("---------------");
                 connection.prepareStatement("SELECT t.*, CTID " +
                         "FROM public.\"Tool\" t " +
                         "LIMIT 5013");
