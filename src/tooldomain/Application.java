@@ -102,12 +102,12 @@ public class Application {
      * Prints out the request options and
      * manages their input
      */
-    public void manageRequests() throws SQLException {
+    public void manageRequests() throws SQLException, ClassNotFoundException {
         System.out.println("Manage Request");
         System.out.println("1. Make Request \t 5. View request for your tools");
         System.out.println("2. Cancel Request \t 6. View your request");
         System.out.println("3. Accept Request \t 7. Return a tool");
-        System.out.println("4. Decline Request");
+        System.out.println("4. Decline Request \t 8. Return to main menu");
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
@@ -154,6 +154,9 @@ public class Application {
                 System.out.println("Whats the barcode of the tool you wish to return?");
                 input = scanner.nextLine();
                 request.ReturnTool(email,input);
+            }
+            case (8) -> {
+                runApplication();
             }
         }
     }
