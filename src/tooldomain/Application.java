@@ -99,7 +99,9 @@ public class Application {
     }
 
     public void manageRequests(){
-        System.out.println("requests");
+        System.out.println("Manage Request");
+        System.out.println("1. Make Request \t ");
+        System.out.println("1. Make Request");
     }
 
 }

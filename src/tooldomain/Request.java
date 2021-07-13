@@ -15,7 +15,7 @@ public class Request {
     public Request(String url, String password, String username, String ssl) throws SQLException, ClassNotFoundException{
         Class.forName("org.postgresql.Driver");
         this.connection = configure(url, password, username, ssl);
-        MakeRequest("test175@rit.edu", "1", 4,"07/11/21");
+        MakeRequest("test175@rit.edu", "123", 4,"07/11/21");
     }
 
     /**
