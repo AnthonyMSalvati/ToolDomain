@@ -76,6 +76,7 @@ public class Main {
         }
         Application application = new Application();
 
+        connection.close();
     }
 
     public static void displayInitialMessage() {
