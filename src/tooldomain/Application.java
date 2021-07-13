@@ -2,10 +2,14 @@ package tooldomain;
 
 import javax.tools.Tool;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Application {
+    private Connection connection;
 
     public Application() throws SQLException, ClassNotFoundException {
         runApplication();
@@ -123,9 +127,61 @@ public class Application {
         }
     }
 
-    public void viewToolList(){
-        System.out.println("list");
+    public void viewToolList() throws SQLException, ClassNotFoundException {
+        Class.forName("org.postgresql.Driver");
+        this.connection =  new DatabaseConnection(
+                "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
+                "Hoh2saikaequeic5piut",
+                "p32001a",
+                "true" ).getConnection();
+
+        System.out.println("What would you like to search?");
+        System.out.println("-----------------------------");
+        System.out.println("1. Available Tools \t 2. Lent tools \t 3. Borrowed Tools");
+
+        Scanner scanner = new Scanner(new InputStreamReader(System.in));
+        String input = scanner.nextLine();
+
+        switch (Integer.parseInt(input)){
+            case (1) -> {
+                System.out.println("Available Tools");
+                System.out.println("---------------------");
+                PreparedStatement state = connection.prepareStatement("SELECT t.*, CTID " +
+                        "FROM public.\"Tool\" t " + "ORDER BY" + "Name" +
+                        "LIMIT 5013");
+                ResultSet result = state.executeQuery();
+                while (result.next()){
+                    System.out.println(result.getString("Name"));
+                }
+
+            }
+            case (2) -> {
+                System.out.println("Available Tools");
+                System.out.println("---------------------");
+                PreparedStatement state = connection.prepareStatement("SELECT t.*, CTID " +
+                        "FROM public.\"Tool\" t " +
+                        "LIMIT 5013");
+                ResultSet result = state.executeQuery();
+                while (result.next()){
+                    System.out.println(result.getString("Name"));
+                }
+
+            }
+            case (3) -> {
+                System.out.println("Available Tools");
+                System.out.println("---------------------");
+                connection.prepareStatement("SELECT t.*, CTID " +
+                        "FROM public.\"Tool\" t " +
+                        "LIMIT 5013");
+
+            }
+            case (4) -> {
+                return;
+            }
+        }
+        connection.close();
     }
+
 
     /**
      * Prints out the request options and
