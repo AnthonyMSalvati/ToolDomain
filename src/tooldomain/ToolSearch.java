@@ -26,7 +26,7 @@ public class ToolSearch {
         Statement statement = this.connection.createStatement();
         ResultSet result = null;
 
-        String search = String.format("SELECT * FROM \"Tool\" WHERE \"%s\" = \'%s\'", searchType, query);
+        String search = String.format("SELECT * FROM \"Tool\" LEFT JOIN \"Tool Categories\" ON \'Tool.Barcode\' = \'\"Tool Categories\".Barcode\' WHERE \"%s\" = \'%s\'", searchType, query);
         System.out.println(search);
         result = statement.executeQuery(search);
         return result;
