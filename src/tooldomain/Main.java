@@ -17,7 +17,6 @@ public class Main {
     private static boolean userLoggedIn;
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        //Request r = new Request("jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a", "Hoh2saikaequeic5piut", "p32001a", "true");
         Class.forName("org.postgresql.Driver");
         connection = new DatabaseConnection(
                 "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
@@ -26,7 +25,6 @@ public class Main {
                 "true" ).getConnection();
 
         displayInitialMessage();
-
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String userInput = scanner.nextLine();
         while (!userLoggedIn){
@@ -75,8 +73,9 @@ public class Main {
             }
         }
         Application application = new Application();
-
         connection.close();
+
+
     }
 
     public static void displayInitialMessage() {
@@ -171,4 +170,7 @@ public class Main {
         }
     }
 
+    public static Connection getConnection() {
+        return connection;
+    }
 }
