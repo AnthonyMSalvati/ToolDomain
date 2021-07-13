@@ -71,22 +71,51 @@ public class Application {
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
+        String order ="";
 
         switch (Integer.parseInt(input)){
             case (1) -> {
                 System.out.println("Please enter the barcode of the tool you would like to find: ");
                 input = scanner.nextLine();
-                ToolSearch search = new ToolSearch(input, "Barcode");
+                boolean hasSpecified = false;
+                while (!hasSpecified){
+                    System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order?");
+                    order = scanner.nextLine();
+                    if (!(order.equals("ASC") || order.equals("DESC"))){
+                        System.out.println("Please specify either ASC or DESC.");
+                    }
+                    else hasSpecified = true;
+                }
+
+                ToolSearch search = new ToolSearch(input, "Barcode", order);
             }
             case (2) -> {
                 System.out.println("Please enter the category you would like to search within: ");
                 input = scanner.nextLine();
-                ToolSearch search = new ToolSearch(input, "Category");
+                boolean hasSpecified = false;
+                while (!hasSpecified){
+                    System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order?");
+                    order = scanner.nextLine();
+                    if (!(order.equals("ASC") || order.equals("DESC"))){
+                        System.out.println("Please specify either ASC or DESC.");
+                    }
+                    else hasSpecified = true;
+                }
+                ToolSearch search = new ToolSearch(input, "Category", order);
             }
             case (3) -> {
                 System.out.println("Please enter the name of the tool you would like to find: ");
                 input = scanner.nextLine();
-                ToolSearch search = new ToolSearch(input, "Name");
+                boolean hasSpecified = false;
+                while (!hasSpecified){
+                    System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order (by name)?");
+                    order = scanner.nextLine();
+                    if (!(order.equals("ASC") || order.equals("DESC"))){
+                        System.out.println("Please specify either ASC or DESC.");
+                    }
+                    else hasSpecified = true;
+                }
+                ToolSearch search = new ToolSearch(input, "Name", order);
             }
             case (4) -> {
                 runApplication();
