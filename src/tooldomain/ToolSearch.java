@@ -11,25 +11,19 @@ import java.sql.Statement;
 public class ToolSearch {
 
     private Connection connection;
+    private String searchType;
 
-    public ToolSearch(){
-
-    }
-
-    public ToolSearch(String url, String password, String username, String ssl) throws SQLException, ClassNotFoundException {
+    public ToolSearch(String toolToSearch, String typeOfSearch) throws SQLException, ClassNotFoundException {
         Class.forName("org.postgresql.Driver");
-        this.connection = configure(url, password, username, ssl);
+        this.connection = connection = new DatabaseConnection(
+                "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
+                "Hoh2saikaequeic5piut",
+                "p32001a",
+                "true" ).getConnection();
+        this.searchType = typeOfSearch;
+
         processResult(search(""));
-    }
-
-    private Connection configure(String url, String pwd, String username, String ssl) throws SQLException {
-        Properties properties = new Properties();
-        properties.setProperty("user", username);
-        properties.setProperty("password", pwd);
-        properties.setProperty("ssl", "require");
-
-        Connection connection = DriverManager.getConnection(url,properties);
-        return connection;
+        connection.close();
     }
 
     private ResultSet search(String query) throws SQLException {
