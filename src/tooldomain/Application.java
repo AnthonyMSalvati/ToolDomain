@@ -1,11 +1,15 @@
 package tooldomain;
 
-import javax.tools.Tool;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Scanner;
 
+
 public class Application {
+    private Connection connection;
 
     public Application() throws SQLException, ClassNotFoundException {
         runApplication();
@@ -57,8 +61,46 @@ public class Application {
             }
         }
     }
-    public void manageTools(){
-        System.out.println("manage");
+
+    public void manageTools(
+
+    ) throws SQLException, ClassNotFoundException {
+        this.connection = connection = new DatabaseConnection(
+                "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
+                "Hoh2saikaequeic5piut",
+                "p32001a",
+                "true" ).getConnection();
+        Statement statement = this.connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet result = null;
+        System.out.println("-----------------------------");
+        System.out.println("What do you want to do to your catalog");
+        System.out.println("-----------------------------");
+        System.out.println("1. Add tool to catalog 2. Remove tool from catalog");
+        Scanner scanner = new Scanner(new InputStreamReader(System.in));
+        String input = scanner.nextLine();
+        switch (Integer.parseInt(input)){
+            case (1) -> {
+                System.out.println("Input your email address");
+                String email = scanner.nextLine();
+                System.out.println("Input barcode number for tool to add");
+                int val = scanner.nextInt();
+                String newVal = Integer.toString(val);
+                String query = "INSERT INTO Owner (Email, BarCode) VALUES (" + email + ',' + newVal +" );";
+                result = statement.executeQuery(query);
+            }
+            case (2) -> {
+                System.out.println("Input your email address");
+                String email = scanner.nextLine();
+                System.out.println("Input barcode number for tool to remove");
+                int val = scanner.nextInt();
+                String newVal = Integer.toString(val);
+                String newQuery = "IF EXISTS(SELECT * FROM Your_table WHERE email = "+ email +")\n" +
+                        "BEGIN\n" +
+                        "   DELETE FROM Owner WHERE Barcode= " + newVal + "\n" +
+                        "END";
+                result = statement.executeQuery(newQuery);
+            }
+        }
     }
 
     public void searchForTools() throws SQLException, ClassNotFoundException {
