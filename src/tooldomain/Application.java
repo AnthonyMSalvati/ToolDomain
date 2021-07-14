@@ -68,6 +68,7 @@ public class Application {
         System.out.println("------------------------------------------");
         System.out.println("1. Add Tool \t 2. Delete Tool");
         System.out.println("3. Edit Tool \t 4. Quit");
+        System.out.println("5. Manage Categories");
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
@@ -99,6 +100,22 @@ public class Application {
             case (4) -> {
 
             }
+            case (5) -> {
+                System.out.println("Please enter the barcode of the tool you would like to add a category to: ");
+                String barcode = scanner.nextLine();
+                System.out.println("Please enter the category(ies) to add it to. " +
+                        "If entering multiple, please separate with a ',': ");
+                String userInput = scanner.nextLine();
+                String[] str = userInput.split(",");
+
+                Statement statement = this.connection.createStatement();
+                ResultSet results = null;
+                for (int i = 0; i < str.length; i++){
+                    String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES (\'%s\', \'%s\')", barcode, str[i]);
+                    statement.executeUpdate(addCategory);
+                }
+                connection.close();
+            }
         }
 
     }
@@ -110,7 +127,6 @@ public class Application {
         System.out.println("-----------------------------");
         System.out.println("1. By Barcode \t 2. By Name");
         System.out.println("3. By Category \t 4. Return to menu");
-        System.out.println("5. Manage Categories");
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
@@ -163,22 +179,7 @@ public class Application {
             case (4) -> {
                 runApplication();
             }
-            case (5) -> {
-                System.out.println("Please enter the barcode of the tool you would like to add a category to: ");
-                String barcode = scanner.nextLine();
-                System.out.println("Please enter the category(ies) to add it to. " +
-                        "If entering multiple, please separate with a ',': ");
-                String userInput = scanner.nextLine();
-                String[] str = userInput.split(",");
 
-                Statement statement = this.connection.createStatement();
-                ResultSet results = null;
-                for (int i = 0; i < str.length; i++){
-                    String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES (\'%s\', \'%s\')", barcode, str[i]);
-                    statement.executeUpdate(addCategory);
-                }
-                connection.close();
-            }
         }
     }
 
