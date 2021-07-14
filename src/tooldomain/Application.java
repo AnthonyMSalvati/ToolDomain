@@ -99,6 +99,9 @@ public class Application {
             case (3) -> {
 
             }
+            case (4) -> {
+
+            }
         }
 
     }
@@ -185,6 +188,7 @@ public class Application {
         switch (Integer.parseInt(input)){
 
             case (1) -> {
+                System.out.println("---------------");
                 System.out.println("Available Tools");
                 System.out.println("---------------");
                 PreparedStatement state = connection.prepareStatement("SELECT * FROM \"Tool\" ORDER BY \"Tool\".\"Name\" ASC");
@@ -195,8 +199,9 @@ public class Application {
 
             }
             case (2) -> {
-                System.out.println("Available Tools");
-                System.out.println("---------------");
+                System.out.println("----------");
+                System.out.println("Lent Tools");
+                System.out.println("----------");
                 PreparedStatement state = connection.prepareStatement("SELECT t.*, CTID " +
                         "FROM public.\"Tool\" t " +
                         "LIMIT 5013");
@@ -207,15 +212,17 @@ public class Application {
 
             }
             case (3) -> {
-                System.out.println("Available Tools");
-                System.out.println("---------------");
+                System.out.println("--------------");
+                System.out.println("Borrowed Tools");
+                System.out.println("--------------");
                 connection.prepareStatement("SELECT t.*, CTID " +
                         "FROM public.\"Tool\" t " +
                         "LIMIT 5013");
 
             }
             case (4) -> {
-                return;
+                System.out.println("Thank you! Have a wonderful day!");
+                System.exit(0);
             }
         }
         connection.close();
