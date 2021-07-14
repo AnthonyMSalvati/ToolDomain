@@ -99,7 +99,8 @@ public class Application {
 
             }
             case (4) -> {
-
+                System.out.println("Thank you! Have a wonderful day!");
+                System.exit(0);
             }
             case (5) -> {
                 System.out.println("Please enter the barcode of the tool you would like to add a category to: ");
