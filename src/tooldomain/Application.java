@@ -2,10 +2,7 @@ package tooldomain;
 
 import javax.tools.Tool;
 import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Scanner;
 
 public class Application {
@@ -111,8 +108,9 @@ public class Application {
         System.out.println("-----------------------------");
         System.out.println("How would you like to search?");
         System.out.println("-----------------------------");
-        System.out.println("1. By Barcode \t 3. By Name");
-        System.out.println("2. By Category \t 4. Return to menu");
+        System.out.println("1. By Barcode \t 2. By Name");
+        System.out.println("3. By Category \t 4. Return to menu");
+        System.out.println("5. Manage Categories");
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
@@ -164,6 +162,22 @@ public class Application {
             }
             case (4) -> {
                 runApplication();
+            }
+            case (5) -> {
+                System.out.println("Please enter the barcode of the tool you would like to add a category to: ");
+                String barcode = scanner.nextLine();
+                System.out.println("Please enter the category(ies) to add it to. " +
+                        "If entering multiple, please separate with a ',': ");
+                String userInput = scanner.nextLine();
+                String[] str = userInput.split(",");
+
+                Statement statement = this.connection.createStatement();
+                ResultSet results = null;
+                for (int i = 0; i < str.length; i++){
+                    String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES (\'%s\', \'%s\')", barcode, str[i]);
+                    statement.executeUpdate(addCategory);
+                }
+                connection.close();
             }
         }
     }
