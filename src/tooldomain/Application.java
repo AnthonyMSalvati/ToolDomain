@@ -99,7 +99,8 @@ public class Application {
 
             }
             case (4) -> {
-
+                System.out.println("Thank you! Have a wonderful day!");
+                System.exit(0);
             }
             case (5) -> {
                 System.out.println("Please enter the barcode of the tool you would like to add a category to: ");
@@ -109,6 +110,11 @@ public class Application {
                 String userInput = scanner.nextLine();
                 String[] str = userInput.split(",");
 
+                this.connection = new DatabaseConnection(
+                        "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
+                        "Hoh2saikaequeic5piut",
+                        "p32001a",
+                        "true" ).getConnection();
                 Statement statement = this.connection.createStatement();
                 ResultSet results = null;
                 for (int i = 0; i < str.length; i++){
