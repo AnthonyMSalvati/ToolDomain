@@ -2,10 +2,7 @@ package tooldomain;
 
 import javax.tools.Tool;
 import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Scanner;
 
 public class Application {
@@ -57,8 +54,70 @@ public class Application {
             }
         }
     }
-    public void manageTools(){
-        System.out.println("manage");
+    public void manageTools() throws ClassNotFoundException, SQLException {
+
+        Class.forName("org.postgresql.Driver");
+        connection = new DatabaseConnection(
+                "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
+                "Hoh2saikaequeic5piut",
+                "p32001a",
+                "true" ).getConnection();
+
+        System.out.println("------------------------------------------");
+        System.out.println("What would you like to do to your catalog?");
+        System.out.println("------------------------------------------");
+        System.out.println("1. Add Tool \t 2. Delete Tool");
+        System.out.println("3. Edit Tool \t 4. Quit");
+        System.out.println("5. Manage Categories");
+
+        Scanner scanner = new Scanner(new InputStreamReader(System.in));
+        String input = scanner.nextLine();
+        String order ="";
+
+        switch (Integer.parseInt(input)){
+            case (1) -> {
+                System.out.println("Please enter your email address");
+                String email = scanner.nextLine();
+                System.out.println("Please enter your the barcode number for the tool to add");
+                int value = scanner.nextInt();
+                String query = "INSERT INTO Owner (Email, Barcode)" +
+                        "VALUES " +  email+ "," + value + ");";
+                connection.createStatement().executeQuery(query);
+            }
+            case (2) -> {
+                System.out.println("Please enter your email address");
+                String email = scanner.nextLine();
+                System.out.println("Please enter your the barcode number for the tool to delete");
+                int value = scanner.nextInt();
+                String query = "DELETE FROM Owners" +
+                        "WHERE email = "+ email +
+                        "AND barcode = " + value + ";";
+                connection.createStatement().executeQuery(query);
+            }
+            case (3) -> {
+
+            }
+            case (4) -> {
+
+            }
+            case (5) -> {
+                System.out.println("Please enter the barcode of the tool you would like to add a category to: ");
+                String barcode = scanner.nextLine();
+                System.out.println("Please enter the category(ies) to add it to. " +
+                        "If entering multiple, please separate with a ',': ");
+                String userInput = scanner.nextLine();
+                String[] str = userInput.split(",");
+
+                Statement statement = this.connection.createStatement();
+                ResultSet results = null;
+                for (int i = 0; i < str.length; i++){
+                    String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES (\'%s\', \'%s\')", barcode, str[i]);
+                    statement.executeUpdate(addCategory);
+                }
+                connection.close();
+            }
+        }
+
     }
 
     public void searchForTools() throws SQLException, ClassNotFoundException {
@@ -66,8 +125,8 @@ public class Application {
         System.out.println("-----------------------------");
         System.out.println("How would you like to search?");
         System.out.println("-----------------------------");
-        System.out.println("1. By Barcode \t 3. By Name");
-        System.out.println("2. By Category \t 4. Return to menu");
+        System.out.println("1. By Barcode \t 2. By Name");
+        System.out.println("3. By Category \t 4. Return to menu");
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
@@ -120,6 +179,7 @@ public class Application {
             case (4) -> {
                 runApplication();
             }
+
         }
     }
 
@@ -143,6 +203,7 @@ public class Application {
         switch (Integer.parseInt(input)){
 
             case (1) -> {
+                System.out.println("---------------");
                 System.out.println("Available Tools");
                 System.out.println("---------------");
                 PreparedStatement state = connection.prepareStatement("SELECT * FROM \"Tool\" ORDER BY \"Tool\".\"Name\" ASC");
@@ -153,8 +214,9 @@ public class Application {
 
             }
             case (2) -> {
-                System.out.println("Available Tools");
-                System.out.println("---------------");
+                System.out.println("----------");
+                System.out.println("Lent Tools");
+                System.out.println("----------");
                 PreparedStatement state = connection.prepareStatement("SELECT t.*, CTID " +
                         "FROM public.\"Tool\" t " +
                         "LIMIT 5013");
@@ -165,15 +227,17 @@ public class Application {
 
             }
             case (3) -> {
-                System.out.println("Available Tools");
-                System.out.println("---------------");
+                System.out.println("--------------");
+                System.out.println("Borrowed Tools");
+                System.out.println("--------------");
                 connection.prepareStatement("SELECT t.*, CTID " +
                         "FROM public.\"Tool\" t " +
                         "LIMIT 5013");
 
             }
             case (4) -> {
-                return;
+                System.out.println("Thank you! Have a wonderful day!");
+                System.exit(0);
             }
         }
         connection.close();
@@ -217,7 +281,9 @@ public class Application {
                 input = scanner.nextLine();
                 System.out.println("What's the barcode of the tool the user requested?");
                 String barcode = scanner.nextLine();
-                request.AcceptRequest(input, barcode);
+                System.out.println("What date do you what the tool returned by?(mm/dd/yyyy)");
+                String returnby = scanner.nextLine();
+                request.AcceptRequest(input, barcode, returnby);
             }
             case (4) -> {
                 System.out.println("What's the username of user who requested the tool?");
