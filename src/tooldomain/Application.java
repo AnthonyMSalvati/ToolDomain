@@ -57,8 +57,49 @@ public class Application {
             }
         }
     }
-    public void manageTools(){
+    public void manageTools() throws ClassNotFoundException, SQLException {
+
+        Class.forName("org.postgresql.Driver");
+        connection = new DatabaseConnection(
+                "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
+                "Hoh2saikaequeic5piut",
+                "p32001a",
+                "true" ).getConnection();
         System.out.println("manage");
+        System.out.println("-----------------------------");
+        System.out.println("What would you like to do to your catalog?");
+        System.out.println("-----------------------------");
+        System.out.println("1. Add Tool  2. Delete Tool 2. Edit Tool");
+
+        Scanner scanner = new Scanner(new InputStreamReader(System.in));
+        String input = scanner.nextLine();
+        String order ="";
+
+        switch (Integer.parseInt(input)){
+            case (1) -> {
+                System.out.println("Please enter your email address");
+                String email = scanner.nextLine();
+                System.out.println("Please enter your the barcode number for the tool to add");
+                int value = scanner.nextInt();
+                String query = "INSERT INTO Owner (Email, Barcode)" +
+                "VALUES " +  email+ "," + value + ");";
+                connection.createStatement().executeQuery(query);
+            }
+            case (2) -> {
+                System.out.println("Please enter your email address");
+                String email = scanner.nextLine();
+                System.out.println("Please enter your the barcode number for the tool to delete");
+                int value = scanner.nextInt();
+                String query = "DELETE FROM Owners" +
+                        "WHERE email = "+ email +
+                        "AND barcode = " + value + ";";
+                connection.createStatement().executeQuery(query);
+            }
+            case (3) -> {
+
+            }
+        }
+
     }
 
     public void searchForTools() throws SQLException, ClassNotFoundException {
