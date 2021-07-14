@@ -73,7 +73,6 @@ public class Application {
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
-        String order ="";
 
         switch (Integer.parseInt(input)){
             case (1) -> {
@@ -84,6 +83,7 @@ public class Application {
                 String query = "INSERT INTO Owner (Email, Barcode)" +
                 "VALUES " +  email+ "," + value + ");";
                 connection.createStatement().executeQuery(query);
+                connection.close();
             }
             case (2) -> {
                 System.out.println("Please enter your email address");
@@ -94,6 +94,7 @@ public class Application {
                         "WHERE email = "+ email +
                         "AND barcode = " + value + ";";
                 connection.createStatement().executeQuery(query);
+                connection.close();
 
             }
             case (3) -> {
