@@ -3,6 +3,7 @@ package tooldomain;
 import javax.tools.Tool;
 import java.io.InputStreamReader;
 import java.sql.*;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Application {
@@ -189,6 +190,10 @@ public class Application {
     }
 
     public void viewToolList() throws SQLException, ClassNotFoundException {
+        java.util.Date today = new Date();
+
+
+
         Class.forName("org.postgresql.Driver");
         this.connection =  new DatabaseConnection(
                 "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
@@ -208,7 +213,6 @@ public class Application {
         switch (Integer.parseInt(input)){
 
             case (1) -> {
-                System.out.println("---------------");
                 System.out.println("Available Tools");
                 System.out.println("---------------");
                 PreparedStatement state = connection.prepareStatement("SELECT * FROM \"Tool\" ORDER BY \"Tool\".\"Name\" ASC");
@@ -219,30 +223,29 @@ public class Application {
 
             }
             case (2) -> {
-                System.out.println("----------");
+
                 System.out.println("Lent Tools");
-                System.out.println("----------");
-                PreparedStatement state = connection.prepareStatement("SELECT t.*, CTID " +
-                        "FROM public.\"Tool\" t " +
-                        "LIMIT 5013");
+                System.out.println("---------------");
+                PreparedStatement state = connection.prepareStatement("SELECT \"Request\".\"Return By\",\"Request\".\"DateRequired\",\"Request\".\"Barcode\", \"Request\".\"Email\" FROM \"Request\" INNER JOIN \"Borrowed\" ON \"Request\".\"Barcode\" = \"Borrowed\".\"Barcode\" ORDER BY \"Request\".\"DateRequired\"");
                 ResultSet result = state.executeQuery();
                 while (result.next()){
-                    System.out.println(result.getString("Name"));
+                    System.out.println( result.getDate("DateRequired" )+ " " + "Barcode: " + result.getString("Barcode" ) + " " + "Name: " + result.getString("Email"));
+                    if (result.getDate("Return By").after(today) ){
+                        System.out.println("WARNING ITEM OVERDUE");
+                    }
                 }
 
             }
             case (3) -> {
-                System.out.println("--------------");
-                System.out.println("Borrowed Tools");
-                System.out.println("--------------");
+                System.out.println("Available Tools");
+                System.out.println("---------------");
                 connection.prepareStatement("SELECT t.*, CTID " +
                         "FROM public.\"Tool\" t " +
                         "LIMIT 5013");
 
             }
             case (4) -> {
-                System.out.println("Thank you! Have a wonderful day!");
-                System.exit(0);
+                return;
             }
         }
         connection.close();
