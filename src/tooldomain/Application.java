@@ -224,7 +224,7 @@ public class Application {
                 PreparedStatement state = connection.prepareStatement("SELECT \"Request\".\"Return By\",\"Request\".\"DateRequired\",\"Request\".\"Barcode\", \"Request\".\"Email\" FROM \"Request\" INNER JOIN \"Borrowed\" ON \"Request\".\"Barcode\" = \"Borrowed\".\"Barcode\" ORDER BY \"Request\".\"DateRequired\"");
                 ResultSet result = state.executeQuery();
                 while (result.next()){
-                    System.out.println( result.getDate("DateRequired" )+ " " + "Barcode: " + result.getString("Barcode" ) + " " + "Name: " + result.getString("Email"));
+                    System.out.println( "Date Acquired: "+ result.getDate("DateRequired" )+ " " + "Barcode: " + result.getString("Barcode" ) + " " + "Name: " + result.getString("Email"));
                     if (result.getDate("Return By").after(today) ){
                         System.out.println("WARNING ITEM OVERDUE");
                     }
@@ -232,12 +232,13 @@ public class Application {
 
             }
             case (3) -> {
-                System.out.println("Available Tools");
+                System.out.println("Borrowed Tools");
                 System.out.println("---------------");
-                connection.prepareStatement("SELECT t.*, CTID " +
-                        "FROM public.\"Tool\" t " +
-                        "LIMIT 5013");
-
+                PreparedStatement state = connection.prepareStatement("SELECT \"Request\".\"Return By\",\"Request\".\"DateRequired\",\"Request\".\"Barcode\", \"Request\".\"Email\" FROM \"Request\" INNER JOIN \"Borrowed\" ON \"Request\".\"Barcode\" = \"Borrowed\".\"Barcode\" ORDER BY \"Request\".\"DateRequired\"");
+                ResultSet result = state.executeQuery();
+                while (result.next()) {
+                    System.out.println("Date Borrowed: " + result.getDate("DateRequired") + " " + "Barcode: " + result.getString("Barcode") + " " + "Name: " + result.getString("Email"));
+                }
             }
             case (4) -> {
                 return;
