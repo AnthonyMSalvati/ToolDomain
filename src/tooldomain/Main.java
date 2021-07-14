@@ -52,7 +52,13 @@ public class Main {
                     if (password.equals(result.getString("Password"))){
                         passwordVerified = true;
                         userLoggedIn = true;
+                        long millis = System.currentTimeMillis();
+                        java.sql.Date accessDate = new java.sql.Date(millis);
                         System.out.println(String.format("Login Successful! Welcome %s", userName));
+                        String updateLastLogin = String.format("UPDATE \"User\" SET \"Last Access Date\" " +
+                                "= \'%s\' WHERE \"User\".\"Username\" = \'%s\' AND \"User\".\"Password\" = \'%s\'",
+                                accessDate, userName, password);
+                        connection.createStatement().executeUpdate(updateLastLogin);
                     }
                     else {
                         passwordAttempts++;
@@ -153,8 +159,6 @@ public class Main {
         lastName = scanner.nextLine();
         long millis = System.currentTimeMillis();
         java.sql.Date createDate = new java.sql.Date(millis);
-        //Date time = Calendar.getInstance().getTime();
-        //DateFormat dateFormat = new SimpleDateFormat("yyy-mm-dd");
         PreparedStatement stmt = connection.prepareStatement("INSERT INTO \"User\" values(?,?,?,?,?,?,?)");
         stmt.setString(1, email);
         stmt.setDate(2, createDate);
