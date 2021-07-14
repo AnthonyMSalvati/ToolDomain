@@ -94,6 +94,7 @@ public class Application {
                         "WHERE email = "+ email +
                         "AND barcode = " + value + ";";
                 connection.createStatement().executeQuery(query);
+
             }
             case (3) -> {
 
