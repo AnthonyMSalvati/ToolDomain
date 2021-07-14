@@ -108,6 +108,11 @@ public class Application {
                 String userInput = scanner.nextLine();
                 String[] str = userInput.split(",");
 
+                this.connection = new DatabaseConnection(
+                        "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
+                        "Hoh2saikaequeic5piut",
+                        "p32001a",
+                        "true" ).getConnection();
                 Statement statement = this.connection.createStatement();
                 ResultSet results = null;
                 for (int i = 0; i < str.length; i++){
