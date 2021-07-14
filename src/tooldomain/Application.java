@@ -266,7 +266,9 @@ public class Application {
                 input = scanner.nextLine();
                 System.out.println("What's the barcode of the tool the user requested?");
                 String barcode = scanner.nextLine();
-                request.AcceptRequest(input, barcode);
+                System.out.println("What date do you what the tool returned by?(mm/dd/yyyy)");
+                String returnby = scanner.nextLine();
+                request.AcceptRequest(input, barcode, returnby);
             }
             case (4) -> {
                 System.out.println("What's the username of user who requested the tool?");

@@ -59,12 +59,14 @@ public class Request {
      * @param barcode: barcode of tool requested
      * @throws SQLException
      */
-    public void AcceptRequest( String email, String barcode ) throws SQLException {
+    public void AcceptRequest( String email, String barcode, String returnBy ) throws SQLException {
         Statement statement = this.connection.createStatement();
         System.out.println("Processing accept request...");
-        AcceptDecline( email, barcode);
+        AcceptDecline( email, barcode, returnBy);
         try {
             statement.execute("UPDATE \"Request\" set \"Status\" = 'Accepted' where \"Email\" = '"
+                    + email + "' AND \"Barcode\" = '" + barcode + "'");
+            statement.execute("UPDATE \"Request\" set \"ReturnBy\" = '" + returnBy + "' where \"Email\" = '"
                     + email + "' AND \"Barcode\" = '" + barcode + "'");
             statement.execute("INSERT into \"Borrowed\" (\"Email\", \"Barcode\") " +
                     "values ( '" + email + "','" + barcode + "')");
@@ -81,19 +83,15 @@ public class Request {
      * @param barcode: barcode of tool requested
      * @throws SQLException
      */
-    public  void AcceptDecline( String email, String barcode ) throws SQLException{
+    public  void AcceptDecline( String email, String barcode, String returnBy ) throws SQLException{
         Statement statement = this.connection.createStatement();
         System.out.println("Declining all conflicting request...");
         try {
             ResultSet result = statement.executeQuery("Select * from \"Request\" where \"Email\" = '"
                     + email + "' AND \"Barcode\" = '" + barcode + "'");
             if (result.next()) {
-                String date = result.getString("DateRequired");
-                int dur = Integer.parseInt(result.getString("Duration"));
-                dur += Integer.parseInt(date.substring(9));
-                String returnDate = date.substring(0, 9) + dur;
                 statement.execute("UPDATE \"Request\" set \"Status\" = 'Declined' where \"DateRequired\" < '"
-                        + returnDate + "' And \"Status\" = 'Pending' And \"Barcode\" = '" + barcode + "'");
+                        + returnBy + "' And \"Status\" = 'Pending' And \"Barcode\" = '" + barcode + "'");
             }
         }catch (SQLException e){
             System.out.println("No conflicting request found");
