@@ -83,7 +83,14 @@ public class Application {
                 int value = scanner.nextInt();
                 String query = "INSERT INTO Owner (Email, Barcode)" +
                         "VALUES " +  email+ "," + value + ");";
-                connection.createStatement().executeQuery(query);
+                try{
+                    connection.createStatement().executeQuery(query);
+
+                }
+                catch(SQLException e){
+                    System.out.println("Error with Adding barcode");
+                }
+
             }
             case (2) -> {
                 System.out.println("Please enter your email address");
@@ -93,12 +100,20 @@ public class Application {
                 String query = "DELETE FROM Owners" +
                         "WHERE email = "+ email +
                         "AND barcode = " + value + ";";
-                connection.createStatement().executeQuery(query);
+                try{
+                    connection.createStatement().executeQuery(query);
+
+                }
+                catch(SQLException e){
+                    System.out.println("Error with Deleting tool with barcode");
+                }
+
             }
             case (3) -> {
 
             }
             case (4) -> {
+                System.out.println("System Catalog Down");
                 System.out.println("Thank you! Have a wonderful day!");
                 System.exit(0);
             }
@@ -109,19 +124,24 @@ public class Application {
                         "If entering multiple, please separate with a ',': ");
                 String userInput = scanner.nextLine();
                 String[] str = userInput.split(",");
+                try{
+                    this.connection = new DatabaseConnection(
+                            "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
+                            "Hoh2saikaequeic5piut",
+                            "p32001a",
+                            "true" ).getConnection();
+                    Statement statement = this.connection.createStatement();
+                    ResultSet results = null;
+                    for (int i = 0; i < str.length; i++){
+                        String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES (\'%s\', \'%s\')", barcode, str[i]);
+                        statement.executeUpdate(addCategory);
+                    }
+                    connection.close();
 
-                this.connection = new DatabaseConnection(
-                        "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
-                        "Hoh2saikaequeic5piut",
-                        "p32001a",
-                        "true" ).getConnection();
-                Statement statement = this.connection.createStatement();
-                ResultSet results = null;
-                for (int i = 0; i < str.length; i++){
-                    String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES (\'%s\', \'%s\')", barcode, str[i]);
-                    statement.executeUpdate(addCategory);
                 }
-                connection.close();
+                catch(SQLException e){
+                    System.out.println("Error with Adding barcode");
+                }
             }
         }
 
