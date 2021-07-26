@@ -110,6 +110,77 @@ public class Application {
 
             }
             case (3) -> {
+                System.out.println("Please enter your email address");
+                String email = scanner.nextLine();
+                System.out.println("Please enter your the barcode number for the tool to edit");
+                int oldBarcode = scanner.nextInt();
+                System.out.println("Please enter what you want to change about the tool ");
+                System.out.println("1.Barcode 2.Description 3.Price 4.Name");
+                int field = scanner.nextInt();
+                switch (field){
+                    case (1) -> {
+                        System.out.println("Please enter new barcode");
+                        int barcode = scanner.nextInt();
+                        String query = "UPDATE Owners" +
+                                "SET Barcode = " + barcode +
+                                "WHERE Barcode = " + oldBarcode +
+                                "AND" +" email = "+ email + ";";
+                        try{
+                            connection.createStatement().executeQuery(query);
+
+                        }
+                        catch(SQLException e){
+                            System.out.println("Error with Changing Barcode");
+                        }
+                    }
+                    case (2) -> {
+                        System.out.println("Please enter new Description");
+                        String description = scanner.nextLine();
+                        String query = "UPDATE Owners" +
+                                "SET Description = " + description +
+                                "WHERE Barcode = " + oldBarcode +
+                                "AND" +" email = "+ email + ";";
+                        try{
+                            connection.createStatement().executeQuery(query);
+
+                        }
+                        catch(SQLException e){
+                            System.out.println("Error with Changing Description");
+                        }
+                    }
+                    case (3) -> {
+                        System.out.println("Please enter new Price");
+                        int price = scanner.nextInt();
+                        String query = "UPDATE Owners" +
+                                "SET Price = " + price +
+                                "WHERE Barcode = " + oldBarcode +
+                                "AND" +" email = "+ email + ";";
+                        try{
+                            connection.createStatement().executeQuery(query);
+
+                        }
+                        catch(SQLException e){
+                            System.out.println("Error with Changing Price");
+                        }
+                    }
+                    case (4) -> {
+                        System.out.println("Please enter new Name");
+                        String name = scanner.nextLine();
+                        String query = "UPDATE Owners" +
+                                "SET Name = " + name +
+                                "WHERE Barcode = " + oldBarcode +
+                                "AND" +" email = "+ email + ";";
+                        try{
+                            connection.createStatement().executeQuery(query);
+
+                        }
+                        catch(SQLException e){
+                            System.out.println("Error with Changing Name");
+                        }
+                    }
+                }
+
+
 
             }
             case (4) -> {
