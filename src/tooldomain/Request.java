@@ -186,7 +186,7 @@ public class Request {
      * @param resultSet: the result return from query
      * @throws SQLException: exception in case sql errors
      */
-    private void resultPrint( ResultSet resultSet ) throws SQLException {
+    public static void resultPrint(ResultSet resultSet) throws SQLException {
         ResultSetMetaData rsmd = resultSet.getMetaData();
         int columnsNumber = rsmd.getColumnCount();
         while (resultSet.next()) {
@@ -224,11 +224,7 @@ public class Request {
                     tools.replace(s, tools.get(s)+1);
                 }
                 else if(s != null ){
-                    try {
-                        tools.put(s, 1);
-                    }catch ( NullPointerException ex){
-                        System.out.println("error getting tools");
-                    }
+                    tools.put(s, 1);
 
                 }
             }

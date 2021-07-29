@@ -23,9 +23,8 @@ public class Main {
                 "Hoh2saikaequeic5piut",
                 "p32001a",
                 "true" ).getConnection();
-        Request n = new Request(connection);
 
-       /* displayInitialMessage();
+       displayInitialMessage();
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         while (!userLoggedIn){
             int passwordAttempts = 0;
@@ -39,7 +38,7 @@ public class Main {
             if (userInput.equals("1")){
                 System.out.println("Please enter your username: ");
                 String userName = scanner.nextLine();
-                String query = String.format("SELECT * FROM \"User\" WHERE \"Username\" = \'%s\'", userName);
+                String query = String.format("SELECT * FROM \"User\" WHERE \"Username\" = '%s'", userName);
                 ResultSet result = connection.createStatement().executeQuery(query);
 
                 if (!result.next())
@@ -55,9 +54,9 @@ public class Main {
                         userLoggedIn = true;
                         long millis = System.currentTimeMillis();
                         java.sql.Date accessDate = new java.sql.Date(millis);
-                        System.out.println(String.format("Login Successful! Welcome %s", userName));
+                        System.out.printf("Login Successful! Welcome %s%n", userName);
                         String updateLastLogin = String.format("UPDATE \"User\" SET \"Last Access Date\" " +
-                                "= \'%s\' WHERE \"User\".\"Username\" = \'%s\' AND \"User\".\"Password\" = \'%s\'",
+                                "= '%s' WHERE \"User\".\"Username\" = '%s' AND \"User\".\"Password\" = '%s'",
                                 accessDate, userName, password);
                         connection.createStatement().executeUpdate(updateLastLogin);
                     }
@@ -68,13 +67,13 @@ public class Main {
                         password = scanner.nextLine();
                     }
                 }
-                if (passwordAttempts == 3 && userLoggedIn == false){
+                if (passwordAttempts == 3 && !userLoggedIn){
                     System.out.println("Maxmimum login attempts reached. The program will now exit.");
                     System.exit(1);
                 }
 
             }
-            else if (userInput.equals("2")){
+            else {
                 if(registerUser()){
                     userLoggedIn = true;
                 }
@@ -98,19 +97,19 @@ public class Main {
 
         // default ERROR values if they somehow aren't set
         String email = "ERROR";
-        String username = "ERROR";
+        String username;
         String password = "ERROR";
-        String firstName = "ERROR";
-        String lastName = "ERROR";
+        String firstName;
+        String lastName;
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         boolean emailUnique = false;
         while (!emailUnique){
             System.out.println("Registering is easy! Enter your email address:");
             email = scanner.nextLine(); //@TODO: verify string is valid-looking
-            System.out.println(String.format("Is this correct? (Y/N) %s", email));
+            System.out.printf("Is this correct? (Y/N) %s%n", email);
             String response = scanner.nextLine();
-            String query = String.format("SELECT * FROM \"User\" WHERE \"Email\" = \'%s\'", email);
+            String query = String.format("SELECT * FROM \"User\" WHERE \"Email\" = '%s'", email);
             ResultSet result = connection.createStatement().executeQuery(query);
             if (result.next()){ // returns false when email not found
                 System.out.println("This email is already taken, please try another.");
@@ -121,7 +120,7 @@ public class Main {
             while (!(response.equals("Y") || response.equals("y"))){
                 System.out.println("Please re-enter your email address");
                 email = scanner.nextLine();
-                System.out.println(String.format("Is this correct? (Y/N) %s", email));
+                System.out.printf("Is this correct? (Y/N) %s%n", email);
                 response = scanner.nextLine();
             }
         }
@@ -131,7 +130,7 @@ public class Main {
         username = scanner.nextLine();
         boolean usernameUnique = false;
         while (!usernameUnique){
-            String query = String.format("SELECT * FROM \"User\" WHERE \"Username\" = \'%s\'", username);
+            String query = String.format("SELECT * FROM \"User\" WHERE \"Username\" = '%s'", username);
             ResultSet result = connection.createStatement().executeQuery(query);
             result.next();
             if (result.next()){ // same logic as email checking
@@ -169,16 +168,7 @@ public class Main {
         stmt.setString(6, lastName);
         stmt.setDate(7, createDate);
 
-        if (stmt.executeUpdate() >=0 ){
-            return true;
-        } else {
-            return false;
-        }
-        */
-        connection.close();
+        return stmt.executeUpdate() >= 0;
     }
 
-    public static Connection getConnection() {
-        return connection;
-    }
 }

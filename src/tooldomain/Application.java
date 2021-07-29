@@ -1,10 +1,8 @@
 package tooldomain;
 
-import javax.tools.Tool;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Scanner;
 
 public class Application {
@@ -243,7 +241,7 @@ public class Application {
                     else hasSpecified = true;
                 }
 
-                ToolSearch search = new ToolSearch(input, "Barcode", order);
+                ToolSearch search = new ToolSearch(input, "Barcode", order, connection);
             }
             case (2) -> {
                 System.out.println("Please enter the category you would like to search within: ");
@@ -257,7 +255,7 @@ public class Application {
                     }
                     else hasSpecified = true;
                 }
-                ToolSearch search = new ToolSearch(input, "Category", order);
+                ToolSearch search = new ToolSearch(input, "Category", order, connection);
             }
             case (3) -> {
                 System.out.println("Please enter the name of the tool you would like to find: ");
@@ -271,7 +269,7 @@ public class Application {
                     }
                     else hasSpecified = true;
                 }
-                ToolSearch search = new ToolSearch(input, "Name", order);
+                ToolSearch search = new ToolSearch(input, "Name", order, connection);
             }
             case (4) -> runApplication();
 
@@ -361,7 +359,7 @@ public class Application {
         System.out.println("What's your email?");
         String email = scanner.nextLine();
 
-        Request request = new Request(Main.getConnection());
+        Request request = new Request(connection);
         switch (Integer.parseInt(input)){
             case (1) -> {
                 String s = "y";
