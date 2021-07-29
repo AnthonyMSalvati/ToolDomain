@@ -5,6 +5,12 @@ import java.sql.*;
 import java.util.Date;
 import java.util.Scanner;
 
+/**
+ * The Application handles te main running the of the programs
+ * including allowing the user to pick options to edit and view tools and requests
+ *
+ * @author: Gianna Borgo </gmb5005@rit.edu>
+ */
 public class Application {
     private Connection connection;
 
@@ -18,7 +24,8 @@ public class Application {
         System.out.println("---------------------------------------");
         System.out.println("1. Manage your tools \t 4. Manage Requests");
         System.out.println("2. Search for a tool \t 5. Quit");
-        System.out.println("3. View the tool list");
+        System.out.println("3. View the tool list \t 6. View DashBoard");
+        System.out.println("7. View Statistics");
     }
 
     public void runApplication() throws SQLException, ClassNotFoundException {
@@ -48,18 +55,15 @@ public class Application {
                     System.out.println("Thank you! Have a wonderful day!");
                     System.exit(0);
                 }
+                case (6) -> viewDash();
+                case (7) -> viewSats();
                 default -> System.out.println("Sorry, that is not a valid option.");
             }
         }
     }
-    public void manageTools() throws ClassNotFoundException, SQLException {
+    public void manageTools() throws ClassNotFoundException {
 
         Class.forName("org.postgresql.Driver");
-        connection = new DatabaseConnection(
-                "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
-                "Hoh2saikaequeic5piut",
-                "p32001a",
-                "true" ).getConnection();
 
         System.out.println("------------------------------------------");
         System.out.println("What would you like to do to your catalog?");
@@ -70,7 +74,6 @@ public class Application {
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
-        String order ="";
 
         switch (Integer.parseInt(input)){
             case (1) -> {
@@ -199,7 +202,6 @@ public class Application {
                             "p32001a",
                             "true" ).getConnection();
                     Statement statement = this.connection.createStatement();
-                    ResultSet results = null;
                     for (String s : str) {
                         String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES ('%s', '%s')", barcode, s);
                         statement.executeUpdate(addCategory);
@@ -349,6 +351,9 @@ public class Application {
      */
     public void manageRequests() throws SQLException, ClassNotFoundException {
         System.out.println("Manage Request");
+        System.out.println("-------------------------------------");
+        System.out.println("What would you like to do to request?");
+        System.out.println("-------------------------------------");
         System.out.println("1. Make Request \t 5. View request for your tools");
         System.out.println("2. Cancel Request \t 6. View your request");
         System.out.println("3. Accept Request \t 7. Return a tool");
@@ -389,8 +394,8 @@ public class Application {
                 System.out.println("What's the barcode of the tool the user requested?");
                 String barcode = scanner.nextLine();
                 System.out.println("What date do you what the tool returned by?(mm/dd/yyyy)");
-                String returnby = scanner.nextLine();
-                request.AcceptRequest(input, barcode, returnby);
+                String returnBy = scanner.nextLine();
+                request.AcceptRequest(input, barcode, returnBy);
             }
             case (4) -> {
                 System.out.println("What's the username of user who requested the tool?");
@@ -410,5 +415,54 @@ public class Application {
 
         }
     }
+
+    /**
+     * sets up so the user can view their dashboard
+     * @throws SQLException: exception for handle sql errors
+     * @throws ClassNotFoundException: error for class not found
+     */
+    public void viewDash() throws SQLException, ClassNotFoundException {
+        Scanner scanner = new Scanner(new InputStreamReader(System.in));
+        System.out.println("What's your email?");
+        String email = scanner.nextLine();
+        String input = " ";
+        while( !input.substring(0,1).equalsIgnoreCase("y") ) {
+            Tools tools = new Tools(connection);
+            tools.getNumberAvailableTool(email);
+            tools.getNumberBorrowedTools(email);
+            tools.getNumberLentTools(email);
+            System.out.println("Do you want to go back to the main menu? (y/n)");
+            input = scanner.nextLine();
+        }
+        runApplication();
+    }
+
+    /**
+     * lest user view the stats of their frequently borrowed and lent tools
+     * @throws SQLException: exception for handle sql errors
+     * @throws ClassNotFoundException: error for class not found
+     */
+    public void viewSats() throws SQLException, ClassNotFoundException {
+        Scanner scanner = new Scanner(new InputStreamReader(System.in));
+        System.out.println("What's your email?");
+        String email = scanner.nextLine();
+        System.out.println("View Statistics");
+        System.out.println("-------------------------------------");
+        System.out.println("What statistics would you like to see?");
+        System.out.println("-------------------------------------");
+        System.out.println("1. Top 10 frequently borrowed tools");
+        System.out.println("2. Top 10 frequently lent tools");
+        System.out.println("3. Back to main menu");
+        String input = scanner.nextLine();
+
+        Tools tools = new Tools(connection);
+        switch (Integer.parseInt(input)){
+            case (1) -> tools.getFrequentlyBorrowedTools(email);
+            case (2) -> tools.getFrequentlyLentTools(email);
+            case (3) -> runApplication();
+        }
+    }
+
+
 
 }

@@ -6,9 +6,7 @@ import java.sql.SQLException;
 import java.sql.*;
 import java.util.*;
 import java.io.InputStreamReader;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+
 
 
 public class Main {

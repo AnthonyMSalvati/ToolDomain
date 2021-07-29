@@ -97,6 +97,7 @@ public class Tools {
         tools = Request.sortByValue(tools);
         int x = 0;
         double totTimelent = 0;
+        System.out.println("Top 10 Frequently Lent Tools");
         for(String s: tools.keySet()){
             if( x < 10 ){
                 results = statement.executeQuery("Select * from \"Tool\" where \"Barcode\" = '" + s + "'");
@@ -128,6 +129,7 @@ public class Tools {
         simplifyResults(results, tools);
         tools = Request.sortByValue(tools);
         int x = 0;
+        System.out.println("Top 10 Frequently Borrowed Tools");
         for(String s: tools.keySet()){
             if( x < 10 ){
                 results = statement.executeQuery("Select * from \"Tool\" where \"Barcode\" = '" + s + "'");
