@@ -4,6 +4,7 @@ import javax.tools.Tool;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class Application {
@@ -49,9 +50,7 @@ public class Application {
                     System.out.println("Thank you! Have a wonderful day!");
                     System.exit(0);
                 }
-                default -> {
-                    System.out.println("Sorry, that is not a valid option.");
-                }
+                default -> System.out.println("Sorry, that is not a valid option.");
             }
         }
     }
@@ -203,8 +202,8 @@ public class Application {
                             "true" ).getConnection();
                     Statement statement = this.connection.createStatement();
                     ResultSet results = null;
-                    for (int i = 0; i < str.length; i++){
-                        String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES (\'%s\', \'%s\')", barcode, str[i]);
+                    for (String s : str) {
+                        String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES ('%s', '%s')", barcode, s);
                         statement.executeUpdate(addCategory);
                     }
                     connection.close();
@@ -274,9 +273,7 @@ public class Application {
                 }
                 ToolSearch search = new ToolSearch(input, "Name", order);
             }
-            case (4) -> {
-                runApplication();
-            }
+            case (4) -> runApplication();
 
         }
     }
@@ -367,13 +364,21 @@ public class Application {
         Request request = new Request(Main.getConnection());
         switch (Integer.parseInt(input)){
             case (1) -> {
-                System.out.println("What's the barcode of the tool you wish to borrow?");
-                input = scanner.nextLine();
-                System.out.println("What date do you required the tool by? (mm/dd/yyyy)");
-                String dateRequired = scanner.nextLine();
-                System.out.println("How long do you need the tool for?(numbers only)");
-                int duration = scanner.nextInt();
-                request.MakeRequest(email, input, duration, dateRequired);
+                String s = "y";
+                while( s.equals("y") ) {
+                    System.out.println("What's the barcode of the tool you wish to borrow?");
+                    input = scanner.nextLine();
+                    System.out.println("What date do you required the tool by? (mm/dd/yyyy)");
+                    String dateRequired = scanner.nextLine();
+                    System.out.println("How long do you need the tool for?(numbers only)");
+                    int duration = scanner.nextInt();
+                    request.MakeRequest(email, input, duration, dateRequired);
+                    System.out.println("Request completed");
+                    System.out.println("Based on your request here some tools you might be interested in:");
+                    request.alsoRec(input);
+                    System.out.println("Do you wish to make another request?(y/n)");
+                    s = scanner.nextLine().substring(0,1).toLowerCase();
+                    }
             }
             case (2) -> {
                 System.out.println("What's the barcode of the tool of the request you wish to cancel?");
@@ -396,20 +401,15 @@ public class Application {
                 String barcode = scanner.nextLine();
                 request.DeclineRequest(input, barcode);
             }
-            case (5) -> {
-                request.getRequestForYou(email);
-            }
-            case (6) -> {
-                request.getRequestByYou(email);
-            }
+            case (5) -> request.getRequestForYou(email);
+            case (6) -> request.getRequestByYou(email);
             case (7) -> {
                 System.out.println("Whats the barcode of the tool you wish to return?");
                 input = scanner.nextLine();
                 request.ReturnTool(email,input);
             }
-            case (8) -> {
-                runApplication();
-            }
+            case (8) -> runApplication();
+
         }
     }
 

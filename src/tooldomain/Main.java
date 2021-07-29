@@ -23,8 +23,9 @@ public class Main {
                 "Hoh2saikaequeic5piut",
                 "p32001a",
                 "true" ).getConnection();
+        Request n = new Request(connection);
 
-        displayInitialMessage();
+       /* displayInitialMessage();
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         while (!userLoggedIn){
             int passwordAttempts = 0;
@@ -173,6 +174,8 @@ public class Main {
         } else {
             return false;
         }
+        */
+        connection.close();
     }
 
     public static Connection getConnection() {
