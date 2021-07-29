@@ -13,6 +13,7 @@ public class Main {
 
     private static Connection connection;
     private static boolean userLoggedIn;
+    private static String email;
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         Class.forName("org.postgresql.Driver");
@@ -66,7 +67,7 @@ public class Main {
                     }
                 }
                 if (passwordAttempts == 3 && !userLoggedIn){
-                    System.out.println("Maxmimum login attempts reached. The program will now exit.");
+                    System.out.println("Maximum login attempts reached. The program will now exit.");
                     System.exit(1);
                 }
 
@@ -77,7 +78,7 @@ public class Main {
                 }
             }
         }
-        Application application = new Application();
+        Application application = new Application(email);
         connection.close();
 
 
@@ -166,6 +167,7 @@ public class Main {
         stmt.setString(6, lastName);
         stmt.setDate(7, createDate);
 
+        Main.email = email;
         return stmt.executeUpdate() >= 0;
     }
 

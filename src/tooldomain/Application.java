@@ -13,9 +13,11 @@ import java.util.Scanner;
  */
 public class Application {
     private Connection connection;
+    private final String email;
 
-    public Application() throws SQLException, ClassNotFoundException {
+    public Application( String email) throws SQLException, ClassNotFoundException {
         runApplication();
+        this.email = email;
     }
 
     public void displayMenu(){
@@ -77,8 +79,6 @@ public class Application {
 
         switch (Integer.parseInt(input)){
             case (1) -> {
-                System.out.println("Please enter your email address");
-                String email = scanner.nextLine();
                 System.out.println("Please enter your the barcode number for the tool to add");
                 int value = scanner.nextInt();
                 String query = "INSERT INTO Owner (Email, Barcode)" +
@@ -93,8 +93,6 @@ public class Application {
 
             }
             case (2) -> {
-                System.out.println("Please enter your email address");
-                String email = scanner.nextLine();
                 System.out.println("Please enter your the barcode number for the tool to delete");
                 int value = scanner.nextInt();
                 String query = "DELETE FROM Owners" +
@@ -110,8 +108,6 @@ public class Application {
 
             }
             case (3) -> {
-                System.out.println("Please enter your email address");
-                String email = scanner.nextLine();
                 System.out.println("Please enter your the barcode number for the tool to edit");
                 int oldBarcode = scanner.nextInt();
                 System.out.println("Please enter what you want to change about the tool ");
@@ -344,12 +340,10 @@ public class Application {
         connection.close();
     }
 
-
     /**
-     * Prints out the request options and
-     * manages their input
+     * menu options for viewing a request
      */
-    public void manageRequests() throws SQLException, ClassNotFoundException {
+    public void requestMenu(){
         System.out.println("Manage Request");
         System.out.println("-------------------------------------");
         System.out.println("What would you like to do to request?");
@@ -358,73 +352,85 @@ public class Application {
         System.out.println("2. Cancel Request \t 6. View your request");
         System.out.println("3. Accept Request \t 7. Return a tool");
         System.out.println("4. Decline Request \t 8. Return to main menu");
+    }
+
+
+    /**
+     * Prints out the request options and
+     * manages their input
+     */
+    public void manageRequests() throws SQLException, ClassNotFoundException {
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
-        String input = scanner.nextLine();
-        System.out.println("What's your email?");
-        String email = scanner.nextLine();
+        String input = "0";
 
         Request request = new Request(connection);
-        switch (Integer.parseInt(input)){
-            case (1) -> {
-                String s = "y";
-                while( s.equals("y") ) {
-                    System.out.println("What's the barcode of the tool you wish to borrow?");
-                    input = scanner.nextLine();
-                    System.out.println("What date do you required the tool by? (mm/dd/yyyy)");
-                    String dateRequired = scanner.nextLine();
-                    System.out.println("How long do you need the tool for?(numbers only)");
-                    int duration = scanner.nextInt();
-                    request.MakeRequest(email, input, duration, dateRequired);
-                    System.out.println("Request completed");
-                    System.out.println("Based on your request here some tools you might be interested in:");
-                    request.alsoRec(input);
-                    System.out.println("Do you wish to make another request?(y/n)");
-                    s = scanner.nextLine().substring(0,1).toLowerCase();
-                    }
-            }
-            case (2) -> {
-                System.out.println("What's the barcode of the tool of the request you wish to cancel?");
-                input = scanner.nextLine();
-                request.DeleteRequest(email, input);
-            }
-            case (3) -> {
-                System.out.println("What's the username of user who requested the tool?");
-                input = scanner.nextLine();
-                System.out.println("What's the barcode of the tool the user requested?");
-                String barcode = scanner.nextLine();
-                System.out.println("What date do you what the tool returned by?(mm/dd/yyyy)");
-                String returnBy = scanner.nextLine();
-                request.AcceptRequest(input, barcode, returnBy);
-            }
-            case (4) -> {
-                System.out.println("What's the username of user who requested the tool?");
-                input = scanner.nextLine();
-                System.out.println("What's the barcode of the tool the user requested?");
-                String barcode = scanner.nextLine();
-                request.DeclineRequest(input, barcode);
-            }
-            case (5) -> request.getRequestForYou(email);
-            case (6) -> request.getRequestByYou(email);
-            case (7) -> {
-                System.out.println("Whats the barcode of the tool you wish to return?");
-                input = scanner.nextLine();
-                request.ReturnTool(email,input);
-            }
-            case (8) -> runApplication();
+        while( Integer.parseInt(input) < 8 ) {
 
+            requestMenu();
+            input = scanner.nextLine();
+
+            switch (Integer.parseInt(input)) {
+                case (1) -> {
+                    String s = "y";
+                    while (s.equals("y")) {
+                        System.out.println("What's the barcode of the tool you wish to borrow?");
+                        input = scanner.nextLine();
+                        System.out.println("What date do you required the tool by? (mm/dd/yyyy)");
+                        String dateRequired = scanner.nextLine();
+                        System.out.println("How long do you need the tool for?(numbers only)");
+                        int duration = scanner.nextInt();
+                        request.MakeRequest(email, input, duration, dateRequired);
+                        System.out.println("Request completed");
+                        System.out.println("Based on your request here some tools you might be interested in:");
+                        request.alsoRec(input);
+                        System.out.println("Do you wish to make another request?(y/n)");
+                        s = scanner.nextLine().substring(0, 1).toLowerCase();
+                    }
+                }
+                case (2) -> {
+                    System.out.println("What's the barcode of the tool of the request you wish to cancel?");
+                    input = scanner.nextLine();
+                    request.DeleteRequest(email, input);
+                }
+                case (3) -> {
+                    System.out.println("What's the username of user who requested the tool?");
+                    input = scanner.nextLine();
+                    System.out.println("What's the barcode of the tool the user requested?");
+                    String barcode = scanner.nextLine();
+                    System.out.println("What date do you what the tool returned by?(mm/dd/yyyy)");
+                    String returnBy = scanner.nextLine();
+                    request.AcceptRequest(input, barcode, returnBy);
+                }
+                case (4) -> {
+                    System.out.println("What's the username of user who requested the tool?");
+                    input = scanner.nextLine();
+                    System.out.println("What's the barcode of the tool the user requested?");
+                    String barcode = scanner.nextLine();
+                    request.DeclineRequest(input, barcode);
+                }
+                case (5) -> request.getRequestForYou(email);
+                case (6) -> request.getRequestByYou(email);
+                case (7) -> {
+                    System.out.println("Whats the barcode of the tool you wish to return?");
+                    input = scanner.nextLine();
+                    request.ReturnTool(email, input);
+                }
+            }
         }
+
+        runApplication();
     }
 
     /**
      * sets up so the user can view their dashboard
+     *
      * @throws SQLException: exception for handle sql errors
      * @throws ClassNotFoundException: error for class not found
      */
     public void viewDash() throws SQLException, ClassNotFoundException {
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
-        System.out.println("What's your email?");
-        String email = scanner.nextLine();
+
         String input = " ";
         while( !input.substring(0,1).equalsIgnoreCase("y") ) {
             Tools tools = new Tools(connection);
@@ -434,6 +440,7 @@ public class Application {
             System.out.println("Do you want to go back to the main menu? (y/n)");
             input = scanner.nextLine();
         }
+
         runApplication();
     }
 
@@ -444,23 +451,32 @@ public class Application {
      */
     public void viewSats() throws SQLException, ClassNotFoundException {
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
-        System.out.println("What's your email?");
-        String email = scanner.nextLine();
+        Tools tools = new Tools(connection);
+
+        statMenu();
+        String input = scanner.nextLine();
+        while (Integer.parseInt(input) < 4) {
+            switch (Integer.parseInt(input)) {
+                case (1) -> tools.getFrequentlyBorrowedTools(email);
+                case (2) -> tools.getFrequentlyLentTools(email);
+                case (3) -> statMenu();
+            }
+        }
+
+        runApplication();
+    }
+
+    /**
+     * the menu option for a user viewing their statistics
+     */
+    public void statMenu(){
         System.out.println("View Statistics");
         System.out.println("-------------------------------------");
         System.out.println("What statistics would you like to see?");
         System.out.println("-------------------------------------");
         System.out.println("1. Top 10 frequently borrowed tools");
         System.out.println("2. Top 10 frequently lent tools");
-        System.out.println("3. Back to main menu");
-        String input = scanner.nextLine();
-
-        Tools tools = new Tools(connection);
-        switch (Integer.parseInt(input)){
-            case (1) -> tools.getFrequentlyBorrowedTools(email);
-            case (2) -> tools.getFrequentlyLentTools(email);
-            case (3) -> runApplication();
-        }
+        System.out.println("3. view Statistics menu again. \t 4.Back to main menu");
     }
 
 
