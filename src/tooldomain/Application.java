@@ -97,7 +97,8 @@ public class Application {
                     System.out.println("Please enter price of tool");
                     String price = scanner.nextLine();
                     System.out.println("Is your tool sharable? (true/false)");
-                    Boolean share = scanner.nextBoolean();
+                    boolean share = scanner.nextBoolean();
+                    scanner.nextLine();
                     long date = System.currentTimeMillis();
                     java.sql.Date createDate = new java.sql.Date(date);
                     tool.addTool(email, barcode, des, share, price, name, createDate);
@@ -121,6 +122,8 @@ public class Application {
                                 System.out.println("Please enter new barcode");
                                 String barcode = scanner.nextLine();
                                 Statement statement = connection.createStatement();
+                                statement.execute("UPDATE \"Owner\" set \"Barcode\" = '" + barcode + "' where " +
+                                        "\"Barcode\" = '" + oldBarcode + "'");
                                 statement.execute("UPDATE \"Tool\" set \"Barcode\" = '" + barcode + "' where " +
                                         "\"Barcode\" = '" + oldBarcode + "'");
                                 statement.close();

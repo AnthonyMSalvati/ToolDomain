@@ -17,7 +17,7 @@ public class Tools {
      * Constructor for Tools class gets the connection to the database
      * @param connection: to connect to database
      */
-    public Tools( Connection connection) throws SQLException{
+    public Tools( Connection connection){
         this.connection = connection;
     }
 
@@ -30,7 +30,7 @@ public class Tools {
      * @param price: tool's price
      * @param name: tool's name
      * @param date: tools creation date
-     * @throws SQLException
+     * @throws SQLException: handles sql errors
      */
     public void addTool(String email, String barcode, String description, boolean share, String price, String name, java.sql.Date date ) throws SQLException {
         Statement statement = connection.createStatement();
@@ -56,6 +56,7 @@ public class Tools {
         Statement statement = connection.createStatement();
         try {
             statement.execute("DELETE from \"Tool\" where \"Barcode\" = '" + barcode + "'");
+            statement.execute("DELETE from \"Owner\" where \"Barcode\" = '" + barcode + "'");
         }catch (SQLException e){
             System.out.println("error with deleting tool");
         }
@@ -240,7 +241,7 @@ public class Tools {
             if( x < 10 ){
                 totNumTools++;
             }
-            if( tools != null && !tools.containsKey(s)){
+            if(!tools.containsKey(s)){
                 x++;
                 tools.put(s,1);
             }
