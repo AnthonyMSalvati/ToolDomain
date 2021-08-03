@@ -1,9 +1,11 @@
 package tooldomain;
 
+import javax.swing.plaf.nimbus.State;
 import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The Application handles te main running the of the programs
@@ -15,9 +17,10 @@ public class Application {
     private Connection connection;
     private final String email;
 
-    public Application( String email) throws SQLException, ClassNotFoundException {
-        runApplication();
+    public Application( String email, Connection connection) throws SQLException, ClassNotFoundException, InterruptedException {
+        this.connection = connection;
         this.email = email;
+        runApplication();
     }
 
     public void displayMenu(){
@@ -30,7 +33,7 @@ public class Application {
         System.out.println("7. View Statistics");
     }
 
-    public void runApplication() throws SQLException, ClassNotFoundException {
+    public void runApplication() throws SQLException, ClassNotFoundException, InterruptedException {
         displayMenu();
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         boolean onApplicationMenu = true;
@@ -63,49 +66,40 @@ public class Application {
             }
         }
     }
-    public void manageTools() throws ClassNotFoundException {
+    public void manageTools() throws ClassNotFoundException, SQLException, InterruptedException {
 
-        Class.forName("org.postgresql.Driver");
 
         System.out.println("------------------------------------------");
         System.out.println("What would you like to do to your catalog?");
         System.out.println("------------------------------------------");
         System.out.println("1. Add Tool \t 2. Delete Tool");
-        System.out.println("3. Edit Tool \t 4. Quit");
+        System.out.println("3. Edit Tool \t 4. Back to Main Menu");
         System.out.println("5. Manage Categories");
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
-
+        Tools tool = new Tools(connection);
         switch (Integer.parseInt(input)){
             case (1) -> {
                 System.out.println("Please enter your the barcode number for the tool to add");
-                int value = scanner.nextInt();
-                String query = "INSERT INTO Owner (Email, Barcode)" +
-                        "VALUES " +  email+ "," + value + ");";
-                try{
-                    connection.createStatement().executeQuery(query);
-
-                }
-                catch(SQLException e){
-                    System.out.println("Error with Adding barcode");
-                }
+                String barcode = scanner.nextLine();
+                System.out.println("Please enter a name for you tool");
+                String name = scanner.nextLine();
+                System.out.println("Please enter a description of your tool");
+                String des = scanner.nextLine();
+                System.out.println("Please enter price of tool");
+                String price = scanner.nextLine();
+                System.out.println("Is your tool sharable? (true/false)");
+                Boolean share = scanner.nextBoolean();
+                long date = System.currentTimeMillis();
+                java.sql.Date createDate = new java.sql.Date(date);
+                tool.addTool(email,barcode,des,share,price,name, createDate);
 
             }
             case (2) -> {
                 System.out.println("Please enter your the barcode number for the tool to delete");
-                int value = scanner.nextInt();
-                String query = "DELETE FROM Owners" +
-                        "WHERE email = "+ email +
-                        "AND barcode = " + value + ";";
-                try{
-                    connection.createStatement().executeQuery(query);
-
-                }
-                catch(SQLException e){
-                    System.out.println("Error with Deleting tool with barcode");
-                }
-
+                String value = scanner.nextLine();
+                tool.deleteTool(value);
             }
             case (3) -> {
                 System.out.println("Please enter your the barcode number for the tool to edit");
@@ -113,77 +107,50 @@ public class Application {
                 System.out.println("Please enter what you want to change about the tool ");
                 System.out.println("1.Barcode 2.Description 3.Price 4.Name");
                 int field = scanner.nextInt();
-                switch (field){
-                    case (1) -> {
-                        System.out.println("Please enter new barcode");
-                        int barcode = scanner.nextInt();
-                        String query = "UPDATE Owners" +
-                                "SET Barcode = " + barcode +
-                                "WHERE Barcode = " + oldBarcode +
-                                "AND" +" email = "+ email + ";";
-                        try{
-                            connection.createStatement().executeQuery(query);
-
+                scanner.nextLine();
+                try {
+                    switch (field) {
+                        case (1) -> {
+                            System.out.println("Please enter new barcode");
+                            String barcode = scanner.nextLine();
+                            Statement statement = connection.createStatement();
+                            statement.execute("UPDATE \"Tool\" set \"Barcode\" = '" + barcode + "' where " +
+                                    "\"Barcode\" = '" + oldBarcode + "'");
+                            statement.close();
                         }
-                        catch(SQLException e){
-                            System.out.println("Error with Changing Barcode");
+                        case (2) -> {
+                            System.out.println("Please enter new Description");
+                            String description = scanner.nextLine();
+                            Statement statement = connection.createStatement();
+                            statement.execute("UPDATE \"Tool\" set \"Description\" = '" + description + "' where " +
+                                    "\"Barcode\" = '" + oldBarcode + "'");
+                            statement.close();
                         }
-                    }
-                    case (2) -> {
-                        System.out.println("Please enter new Description");
-                        String description = scanner.nextLine();
-                        String query = "UPDATE Owners" +
-                                "SET Description = " + description +
-                                "WHERE Barcode = " + oldBarcode +
-                                "AND" +" email = "+ email + ";";
-                        try{
-                            connection.createStatement().executeQuery(query);
-
+                        case (3) -> {
+                            System.out.println("Please enter new Price");
+                            String price = scanner.nextLine();
+                            Statement statement = connection.createStatement();
+                            statement.execute("UPDATE \"Tool\" set \"Price\" = '" + price + "' where " +
+                                    "\"Barcode\" = '" + oldBarcode + "'");
+                            statement.close();
                         }
-                        catch(SQLException e){
-                            System.out.println("Error with Changing Description");
-                        }
-                    }
-                    case (3) -> {
-                        System.out.println("Please enter new Price");
-                        int price = scanner.nextInt();
-                        String query = "UPDATE Owners" +
-                                "SET Price = " + price +
-                                "WHERE Barcode = " + oldBarcode +
-                                "AND" +" email = "+ email + ";";
-                        try{
-                            connection.createStatement().executeQuery(query);
-
-                        }
-                        catch(SQLException e){
-                            System.out.println("Error with Changing Price");
+                        case (4) -> {
+                            System.out.println("Please enter new Name");
+                            String name = scanner.nextLine();
+                            Statement statement = connection.createStatement();
+                            statement.execute("UPDATE \"Tool\" set \"Name\" = '" + name + "' where " +
+                                    "\"Barcode\" = '" + oldBarcode + "'");
+                            statement.close();
                         }
                     }
-                    case (4) -> {
-                        System.out.println("Please enter new Name");
-                        String name = scanner.nextLine();
-                        String query = "UPDATE Owners" +
-                                "SET Name = " + name +
-                                "WHERE Barcode = " + oldBarcode +
-                                "AND" +" email = "+ email + ";";
-                        try{
-                            connection.createStatement().executeQuery(query);
-
-                        }
-                        catch(SQLException e){
-                            System.out.println("Error with Changing Name");
-                        }
-                    }
+                }catch (SQLException e){
+                    System.out.println("Error editing tool");
                 }
 
 
 
             }
-            case (4) -> {
-                System.out.println("System Catalog Down");
-                System.out.println("Thank you! Have a wonderful day!");
-                System.exit(0);
-            }
+            case (4) -> runApplication();
             case (5) -> {
                 System.out.println("Please enter the barcode of the tool you would like to add a category to: ");
                 String barcode = scanner.nextLine();
@@ -192,17 +159,11 @@ public class Application {
                 String userInput = scanner.nextLine();
                 String[] str = userInput.split(",");
                 try{
-                    this.connection = new DatabaseConnection(
-                            "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
-                            "Hoh2saikaequeic5piut",
-                            "p32001a",
-                            "true" ).getConnection();
                     Statement statement = this.connection.createStatement();
                     for (String s : str) {
                         String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES ('%s', '%s')", barcode, s);
                         statement.executeUpdate(addCategory);
                     }
-                    connection.close();
 
                 }
                 catch(SQLException e){
@@ -213,84 +174,82 @@ public class Application {
 
     }
 
-    public void searchForTools() throws SQLException, ClassNotFoundException {
+    /**
+     * prints search menu
+     */
+    public void printMenuSearch(){
         System.out.println("search");
         System.out.println("-----------------------------");
         System.out.println("How would you like to search?");
         System.out.println("-----------------------------");
         System.out.println("1. By Barcode \t 2. By Name");
-        System.out.println("3. By Category \t 4. Return to menu");
+        System.out.println("3. By Category \t 4. return to Main menu");
+    }
+
+    public void searchForTools() throws SQLException, ClassNotFoundException, InterruptedException {
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
-        String input = scanner.nextLine();
-        String order ="";
-
-        switch (Integer.parseInt(input)){
-            case (1) -> {
-                System.out.println("Please enter the barcode of the tool you would like to find: ");
-                input = scanner.nextLine();
-                boolean hasSpecified = false;
-                while (!hasSpecified){
-                    System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order?");
-                    order = scanner.nextLine();
-                    if (!(order.equals("ASC") || order.equals("DESC"))){
-                        System.out.println("Please specify either ASC or DESC.");
+        String input = "0";
+        while( Integer.parseInt(input) < 4 ) {
+            printMenuSearch();
+            input = scanner.nextLine();
+            String order = "";
+            switch (Integer.parseInt(input)) {
+                case (1) -> {
+                    System.out.println("Please enter the barcode of the tool you would like to find: ");
+                    input = scanner.nextLine();
+                    boolean hasSpecified = false;
+                    while (!hasSpecified) {
+                        System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order?");
+                        order = scanner.nextLine();
+                        if (!(order.equals("ASC") || order.equals("DESC"))) {
+                            System.out.println("Please specify either ASC or DESC.");
+                        } else hasSpecified = true;
                     }
-                    else hasSpecified = true;
-                }
 
-                ToolSearch search = new ToolSearch(input, "Barcode", order, connection);
-            }
-            case (2) -> {
-                System.out.println("Please enter the category you would like to search within: ");
-                input = scanner.nextLine();
-                boolean hasSpecified = false;
-                while (!hasSpecified){
-                    System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order?");
-                    order = scanner.nextLine();
-                    if (!(order.equals("ASC") || order.equals("DESC"))){
-                        System.out.println("Please specify either ASC or DESC.");
-                    }
-                    else hasSpecified = true;
+                    ToolSearch search = new ToolSearch(input, "Barcode", order, connection);
                 }
-                ToolSearch search = new ToolSearch(input, "Category", order, connection);
-            }
-            case (3) -> {
-                System.out.println("Please enter the name of the tool you would like to find: ");
-                input = scanner.nextLine();
-                boolean hasSpecified = false;
-                while (!hasSpecified){
-                    System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order (by name)?");
-                    order = scanner.nextLine();
-                    if (!(order.equals("ASC") || order.equals("DESC"))){
-                        System.out.println("Please specify either ASC or DESC.");
+                case (2) -> {
+                    System.out.println("Please enter the category you would like to search within: ");
+                    input = scanner.nextLine();
+                    boolean hasSpecified = false;
+                    while (!hasSpecified) {
+                        System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order?");
+                        order = scanner.nextLine();
+                        if (!(order.equals("ASC") || order.equals("DESC"))) {
+                            System.out.println("Please specify either ASC or DESC.");
+                        } else hasSpecified = true;
                     }
-                    else hasSpecified = true;
+                    ToolSearch search = new ToolSearch(input, "Category", order, connection);
                 }
-                ToolSearch search = new ToolSearch(input, "Name", order, connection);
+                case (3) -> {
+                    System.out.println("Please enter the name of the tool you would like to find: ");
+                    input = scanner.nextLine();
+                    boolean hasSpecified = false;
+                    while (!hasSpecified) {
+                        System.out.println("Would you like the results in ascending (ASC) or descending (DESC) order (by name)?");
+                        order = scanner.nextLine();
+                        if (!(order.equals("ASC") || order.equals("DESC"))) {
+                            System.out.println("Please specify either ASC or DESC.");
+                        } else hasSpecified = true;
+                    }
+                    ToolSearch search = new ToolSearch(input, "Name", order, connection);
+                }
+                case (4) -> runApplication();
             }
-            case (4) -> runApplication();
-
+            TimeUnit.SECONDS.sleep(5);
         }
     }
 
-    public void viewToolList() throws SQLException, ClassNotFoundException {
+    public void viewToolList() throws SQLException, ClassNotFoundException, InterruptedException {
         java.util.Date today = new Date();
 
-
-
-        Class.forName("org.postgresql.Driver");
-        this.connection =  new DatabaseConnection(
-                "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
-                "Hoh2saikaequeic5piut",
-                "p32001a",
-                "true" ).getConnection();
 
         System.out.println("------------------------------");
         System.out.println("What would you like to search?");
         System.out.println("------------------------------");
         System.out.println("1. Available Tools \t 2. Lent tools");
-        System.out.println("3. Borrowed Tools \t 4. Quit");
+        System.out.println("3. Borrowed Tools \t 4. Return to Main Menu");
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = scanner.nextLine();
@@ -332,12 +291,8 @@ public class Application {
                     System.out.println("Date Borrowed: " + result.getDate("DateRequired") + " " + "Barcode: " + result.getString("Barcode") + " " + "Name: " + result.getString("Email"));
                 }
             }
-            case (4) -> {
-                System.out.println("Thank you! Have a wonderful day!");
-                System.exit(0);
-            }
+            case (4) -> runApplication();
         }
-        connection.close();
     }
 
     /**
@@ -359,7 +314,7 @@ public class Application {
      * Prints out the request options and
      * manages their input
      */
-    public void manageRequests() throws SQLException, ClassNotFoundException {
+    public void manageRequests() throws SQLException, ClassNotFoundException, InterruptedException {
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = "0";
@@ -373,7 +328,7 @@ public class Application {
             switch (Integer.parseInt(input)) {
                 case (1) -> {
                     String s = "y";
-                    while (s.equals("y")) {
+                    while (s.substring(0,1).equalsIgnoreCase("y")) {
                         System.out.println("What's the barcode of the tool you wish to borrow?");
                         input = scanner.nextLine();
                         System.out.println("What date do you required the tool by? (mm/dd/yyyy)");
@@ -382,10 +337,13 @@ public class Application {
                         int duration = scanner.nextInt();
                         request.MakeRequest(email, input, duration, dateRequired);
                         System.out.println("Request completed");
+                        TimeUnit.SECONDS.sleep(2);
                         System.out.println("Based on your request here some tools you might be interested in:");
                         request.alsoRec(input);
                         System.out.println("Do you wish to make another request?(y/n)");
-                        s = scanner.nextLine().substring(0, 1).toLowerCase();
+                        scanner.nextLine();
+                        s = scanner.nextLine();
+                        System.out.println("Processing");
                     }
                 }
                 case (2) -> {
@@ -417,6 +375,7 @@ public class Application {
                     request.ReturnTool(email, input);
                 }
             }
+            TimeUnit.SECONDS.sleep(5);
         }
 
         runApplication();
@@ -428,7 +387,7 @@ public class Application {
      * @throws SQLException: exception for handle sql errors
      * @throws ClassNotFoundException: error for class not found
      */
-    public void viewDash() throws SQLException, ClassNotFoundException {
+    public void viewDash() throws SQLException, ClassNotFoundException, InterruptedException {
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
 
         String input = " ";
@@ -449,18 +408,19 @@ public class Application {
      * @throws SQLException: exception for handle sql errors
      * @throws ClassNotFoundException: error for class not found
      */
-    public void viewSats() throws SQLException, ClassNotFoundException {
+    public void viewSats() throws SQLException, ClassNotFoundException, InterruptedException {
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         Tools tools = new Tools(connection);
 
-        statMenu();
-        String input = scanner.nextLine();
-        while (Integer.parseInt(input) < 4) {
+        String input = "0";
+        while (Integer.parseInt(input) < 3) {
+            statMenu();
+            input = scanner.nextLine();
             switch (Integer.parseInt(input)) {
                 case (1) -> tools.getFrequentlyBorrowedTools(email);
                 case (2) -> tools.getFrequentlyLentTools(email);
-                case (3) -> statMenu();
             }
+            TimeUnit.SECONDS.sleep(2);
         }
 
         runApplication();
@@ -476,7 +436,7 @@ public class Application {
         System.out.println("-------------------------------------");
         System.out.println("1. Top 10 frequently borrowed tools");
         System.out.println("2. Top 10 frequently lent tools");
-        System.out.println("3. view Statistics menu again. \t 4.Back to main menu");
+        System.out.println("3. Back to main menu");
     }
 
 

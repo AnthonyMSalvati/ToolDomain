@@ -19,8 +19,49 @@ public class Tools {
      */
     public Tools( Connection connection) throws SQLException{
         this.connection = connection;
-        getFrequentlyLentTools("test@rit.edu");
     }
+
+    /**
+     * adds tool to database
+     * @param email:user emain
+     * @param barcode: tools barcode
+     * @param description: tool description
+     * @param share: is Sharable?
+     * @param price: tool's price
+     * @param name: tool's name
+     * @param date: tools creation date
+     * @throws SQLException
+     */
+    public void addTool(String email, String barcode, String description, boolean share, String price, String name, java.sql.Date date ) throws SQLException {
+        Statement statement = connection.createStatement();
+        try {
+            statement.execute("INSERT INTO \"Tool\" (\"Barcode\", \"Description\", \"Shareable\", \"Price\", " +
+                    "\"Name\", \"PurchaseDate\") values (" + barcode + ", " + ", " + description + ", " +
+                    share + ", " + price + ", " + name + ", " + date + ")");
+            statement.execute("INSERT INTO \"Owner\" (\"Email\", \"Barcode\")  values ( " + email + ", " + barcode + ")");
+        }catch ( SQLException e){
+            System.out.println("Problem adding tool");
+        }
+        statement.close();
+
+    }
+
+    /**
+     * delete tool from database
+     * @param barcode: barcode of tool
+     * @throws SQLException: for sql errors
+     */
+    public void deleteTool( String barcode ) throws SQLException {
+        Statement statement = connection.createStatement();
+        try {
+            statement.execute("DELETE from \"Tool\" where \"Barcode\" = '" + barcode + "'");
+        }catch (SQLException e){
+            System.out.println("error with deleting tool");
+        }
+        statement.close();
+    }
+
+
 
     /**
      * Gets the number of lent tools
@@ -93,18 +134,23 @@ public class Tools {
         results = statement.executeQuery("SELECT \"Duration\", \"Barcode\" from \"Request\" where \"Barcode\" IN " +
                 "( SELECT \"Barcode\" from \"Owner\" where \"Owner\".\"Email\" " +
                 "= '" + email + "' AND \"Status\" = 'Accepted' )");
-        double numTools = simplifyResults(results, tools);
+        int numTools = resultsAmount(results);
+        tools = simplifyResults(results, tools);
         tools = Request.sortByValue(tools);
         int x = 0;
         double totTimelent = 0;
         System.out.println("Top 10 Frequently Lent Tools");
-        for(String s: tools.keySet()){
-            if( x < 10 ){
-                results = statement.executeQuery("Select * from \"Tool\" where \"Barcode\" = '" + s + "'");
-                Request.resultPrint(results);
-                totTimelent += tools.get(s);
-                x++;
+        if( !tools.isEmpty()) {
+            for (String s : tools.keySet()) {
+                if (x < 10) {
+                    results = statement.executeQuery("Select * from \"Tool\" where \"Barcode\" = '" + s + "'");
+                    Request.resultPrint(results);
+                    totTimelent += tools.get(s);
+                    x++;
+                }
             }
+        }else{
+            System.out.println("You have no lent tools");
         }
         String pattern = "#.###";
         DecimalFormat decimalFormat =  new DecimalFormat(pattern);
@@ -124,18 +170,26 @@ public class Tools {
         Statement statement = this.connection.createStatement();
         ResultSet results;
         HashMap< String, Integer > tools = new LinkedHashMap<>();
-        results = statement.executeQuery("Select \"Duration\", \"Barcode\" from \"Request\" where " +
-                "\"Email\" = '" + email + "' AND \"Status\" = 'Accepted'");
-        simplifyResults(results, tools);
-        tools = Request.sortByValue(tools);
-        int x = 0;
-        System.out.println("Top 10 Frequently Borrowed Tools");
-        for(String s: tools.keySet()){
-            if( x < 10 ){
-                results = statement.executeQuery("Select * from \"Tool\" where \"Barcode\" = '" + s + "'");
-                Request.resultPrint(results);
-                x++;
+        try {
+            results = statement.executeQuery("Select \"Duration\", \"Barcode\" from \"Request\" where " +
+                    "\"Email\" = '" + email + "' AND \"Status\" = 'Accepted'");
+            simplifyResults(results, tools);
+            tools = Request.sortByValue(tools);
+            int x = 0;
+            System.out.println("Top 10 Frequently Borrowed Tools");
+            if( !tools.isEmpty()) {
+                for (String s : tools.keySet()) {
+                    if (x < 10) {
+                        results = statement.executeQuery("Select * from \"Tool\" where \"Barcode\" = '" + s + "'");
+                        Request.resultPrint(results);
+                        x++;
+                    }
+                }
+            }else{
+                System.out.println("You have no borrowed tools");
             }
+        }catch ( SQLException e ){
+            System.out.println("You have no borrowed tools");
         }
         statement.close();
     }
@@ -148,18 +202,14 @@ public class Tools {
      * of tools is counted including duplicates
      * @param result: the resultSet of query containing all tools
      * @param tools: The map to put the edited results
-     * @return: the total number of tools for top 10
+     * @return: map of tools
      * @throws SQLException: exception in case sql errors
      */
-    public int simplifyResults( ResultSet result, HashMap< String, Integer > tools ) throws SQLException{
+    public HashMap< String, Integer > simplifyResults( ResultSet result, HashMap< String, Integer > tools ) throws SQLException{
         Statement statement = this.connection.createStatement();
         int x = 0;
-        int totNumTools = 0;
         while ( result.next() ){
                 String s = result.getString(2);
-                if( x < 10 ){
-                    totNumTools++;
-                }
                 if( tools != null && tools.containsKey(s)){
                     tools.replace(s, tools.get(s) + result.getInt(1));
                 }
@@ -169,8 +219,35 @@ public class Tools {
                 }
         }
         statement.close();
+        return tools;
+    }
+
+    /**
+     * gets the number of tools used in top 10 to
+     * count for more than one of the same tool
+     * @param result: the resultSet of query containing all tools]
+     * @return: total number of tools for top 10
+     * @throws SQLException: exception in case sql errors
+     */
+    public int resultsAmount( ResultSet result) throws SQLException{
+        Statement statement = this.connection.createStatement();
+        HashMap<String, Integer> tools = new LinkedHashMap<>();
+        int x = 0;
+        int totNumTools = 0;
+        while ( result.next() ){
+            String s = result.getString(2);
+            if( x < 10 ){
+                totNumTools++;
+            }
+            if( tools != null && !tools.containsKey(s)){
+                x++;
+                tools.put(s,1);
+            }
+        }
+        statement.close();
         return totNumTools;
     }
+
 
     /**
      * gets the number of results from query

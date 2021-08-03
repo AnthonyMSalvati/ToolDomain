@@ -15,7 +15,7 @@ public class Main {
     private static boolean userLoggedIn;
     private static String email;
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, InterruptedException {
         Class.forName("org.postgresql.Driver");
         connection = new DatabaseConnection(
                 "jdbc:postgresql://reddwarf.cs.rit.edu:5432/p32001a",
@@ -69,6 +69,14 @@ public class Main {
                 if (passwordAttempts == 3 && !userLoggedIn){
                     System.out.println("Maximum login attempts reached. The program will now exit.");
                     System.exit(1);
+                }else{
+                    Statement statement = connection.createStatement();
+                    ResultSet set = statement.executeQuery("SELECT \"Email\" from \"User\" where \"Username\" " +
+                            "= '" + userName + "'");
+                    if( set.next() ) {
+                        email = set.getString(1);
+                        statement.close();
+                    }
                 }
 
             }
@@ -78,7 +86,7 @@ public class Main {
                 }
             }
         }
-        Application application = new Application(email);
+        Application application = new Application(email, connection);
         connection.close();
 
 
