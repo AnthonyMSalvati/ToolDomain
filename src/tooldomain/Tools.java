@@ -35,10 +35,11 @@ public class Tools {
     public void addTool(String email, String barcode, String description, boolean share, String price, String name, java.sql.Date date ) throws SQLException {
         Statement statement = connection.createStatement();
         try {
+            statement.execute("INSERT INTO \"Owner\" (\"Email\", \"Barcode\")  values ( '" + email + "', '" + barcode + "')");
             statement.execute("INSERT INTO \"Tool\" (\"Barcode\", \"Description\", \"Shareable\", \"Price\", " +
-                    "\"Name\", \"PurchaseDate\") values (" + barcode + ", " + ", " + description + ", " +
-                    share + ", " + price + ", " + name + ", " + date + ")");
-            statement.execute("INSERT INTO \"Owner\" (\"Email\", \"Barcode\")  values ( " + email + ", " + barcode + ")");
+                    "\"Name\", \"PurchaseDate\") values ('" + barcode + "', '" + description + "', '" +
+                    share + "', '" + price + "', '" + name + "', '" + date + "')");
+
         }catch ( SQLException e){
             System.out.println("Problem adding tool");
         }

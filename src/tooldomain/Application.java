@@ -66,111 +66,118 @@ public class Application {
             }
         }
     }
-    public void manageTools() throws ClassNotFoundException, SQLException, InterruptedException {
 
-
+    /**
+     * the manage tool menu
+     */
+    public void printMangeTool(){
         System.out.println("------------------------------------------");
         System.out.println("What would you like to do to your catalog?");
         System.out.println("------------------------------------------");
         System.out.println("1. Add Tool \t 2. Delete Tool");
-        System.out.println("3. Edit Tool \t 4. Back to Main Menu");
-        System.out.println("5. Manage Categories");
+        System.out.println("3. Edit Tool \t 4. Manage Categories");
+        System.out.println("5. Back to Main Menu");
+    }
 
+    public void manageTools() throws ClassNotFoundException, SQLException, InterruptedException {
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
-        String input = scanner.nextLine();
-        Tools tool = new Tools(connection);
-        switch (Integer.parseInt(input)){
-            case (1) -> {
-                System.out.println("Please enter your the barcode number for the tool to add");
-                String barcode = scanner.nextLine();
-                System.out.println("Please enter a name for you tool");
-                String name = scanner.nextLine();
-                System.out.println("Please enter a description of your tool");
-                String des = scanner.nextLine();
-                System.out.println("Please enter price of tool");
-                String price = scanner.nextLine();
-                System.out.println("Is your tool sharable? (true/false)");
-                Boolean share = scanner.nextBoolean();
-                long date = System.currentTimeMillis();
-                java.sql.Date createDate = new java.sql.Date(date);
-                tool.addTool(email,barcode,des,share,price,name, createDate);
-
-            }
-            case (2) -> {
-                System.out.println("Please enter your the barcode number for the tool to delete");
-                String value = scanner.nextLine();
-                tool.deleteTool(value);
-            }
-            case (3) -> {
-                System.out.println("Please enter your the barcode number for the tool to edit");
-                int oldBarcode = scanner.nextInt();
-                System.out.println("Please enter what you want to change about the tool ");
-                System.out.println("1.Barcode 2.Description 3.Price 4.Name");
-                int field = scanner.nextInt();
-                scanner.nextLine();
-                try {
-                    switch (field) {
-                        case (1) -> {
-                            System.out.println("Please enter new barcode");
-                            String barcode = scanner.nextLine();
-                            Statement statement = connection.createStatement();
-                            statement.execute("UPDATE \"Tool\" set \"Barcode\" = '" + barcode + "' where " +
-                                    "\"Barcode\" = '" + oldBarcode + "'");
-                            statement.close();
-                        }
-                        case (2) -> {
-                            System.out.println("Please enter new Description");
-                            String description = scanner.nextLine();
-                            Statement statement = connection.createStatement();
-                            statement.execute("UPDATE \"Tool\" set \"Description\" = '" + description + "' where " +
-                                    "\"Barcode\" = '" + oldBarcode + "'");
-                            statement.close();
-                        }
-                        case (3) -> {
-                            System.out.println("Please enter new Price");
-                            String price = scanner.nextLine();
-                            Statement statement = connection.createStatement();
-                            statement.execute("UPDATE \"Tool\" set \"Price\" = '" + price + "' where " +
-                                    "\"Barcode\" = '" + oldBarcode + "'");
-                            statement.close();
-                        }
-                        case (4) -> {
-                            System.out.println("Please enter new Name");
-                            String name = scanner.nextLine();
-                            Statement statement = connection.createStatement();
-                            statement.execute("UPDATE \"Tool\" set \"Name\" = '" + name + "' where " +
-                                    "\"Barcode\" = '" + oldBarcode + "'");
-                            statement.close();
-                        }
-                    }
-                }catch (SQLException e){
-                    System.out.println("Error editing tool");
-                }
-
-
-
-            }
-            case (4) -> runApplication();
-            case (5) -> {
-                System.out.println("Please enter the barcode of the tool you would like to add a category to: ");
-                String barcode = scanner.nextLine();
-                System.out.println("Please enter the category(ies) to add it to. " +
-                        "If entering multiple, please separate with a ',': ");
-                String userInput = scanner.nextLine();
-                String[] str = userInput.split(",");
-                try{
-                    Statement statement = this.connection.createStatement();
-                    for (String s : str) {
-                        String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES ('%s', '%s')", barcode, s);
-                        statement.executeUpdate(addCategory);
-                    }
+        String input = "0";
+        while ( Integer.parseInt(input) < 5) {
+            switch (Integer.parseInt(input)) {
+                printMangeTool();
+                input = scanner.nextLine();
+                case (1) -> {
+                    Tools tool = new Tools(connection);
+                    System.out.println("Please enter your the barcode number for the tool to add");
+                    String barcode = scanner.nextLine();
+                    System.out.println("Please enter a name for you tool");
+                    String name = scanner.nextLine();
+                    System.out.println("Please enter a description of your tool");
+                    String des = scanner.nextLine();
+                    System.out.println("Please enter price of tool");
+                    String price = scanner.nextLine();
+                    System.out.println("Is your tool sharable? (true/false)");
+                    Boolean share = scanner.nextBoolean();
+                    long date = System.currentTimeMillis();
+                    java.sql.Date createDate = new java.sql.Date(date);
+                    tool.addTool(email, barcode, des, share, price, name, createDate);
 
                 }
-                catch(SQLException e){
-                    System.out.println("Error with Adding barcode");
+                case (2) -> {
+                    Tools tool = new Tools(connection);
+                    System.out.println("Please enter your the barcode number for the tool to delete");
+                    String value = scanner.nextLine();
+                    tool.deleteTool(value);
+                }
+                case (3) -> {
+                    System.out.println("Please enter your the barcode number for the tool to edit");
+                    int oldBarcode = scanner.nextInt();
+                    System.out.println("Please enter what you want to change about the tool ");
+                    System.out.println("1.Barcode 2.Description 3.Price 4.Name");
+                    int field = scanner.nextInt();
+                    scanner.nextLine();
+                    try {
+                        switch (field) {
+                            case (1) -> {
+                                System.out.println("Please enter new barcode");
+                                String barcode = scanner.nextLine();
+                                Statement statement = connection.createStatement();
+                                statement.execute("UPDATE \"Tool\" set \"Barcode\" = '" + barcode + "' where " +
+                                        "\"Barcode\" = '" + oldBarcode + "'");
+                                statement.close();
+                            }
+                            case (2) -> {
+                                System.out.println("Please enter new Description");
+                                String description = scanner.nextLine();
+                                Statement statement = connection.createStatement();
+                                statement.execute("UPDATE \"Tool\" set \"Description\" = '" + description + "' where " +
+                                        "\"Barcode\" = '" + oldBarcode + "'");
+                                statement.close();
+                            }
+                            case (3) -> {
+                                System.out.println("Please enter new Price");
+                                String price = scanner.nextLine();
+                                Statement statement = connection.createStatement();
+                                statement.execute("UPDATE \"Tool\" set \"Price\" = '" + price + "' where " +
+                                        "\"Barcode\" = '" + oldBarcode + "'");
+                                statement.close();
+                            }
+                            case (4) -> {
+                                System.out.println("Please enter new Name");
+                                String name = scanner.nextLine();
+                                Statement statement = connection.createStatement();
+                                statement.execute("UPDATE \"Tool\" set \"Name\" = '" + name + "' where " +
+                                        "\"Barcode\" = '" + oldBarcode + "'");
+                                statement.close();
+                            }
+                        }
+                    } catch (SQLException e) {
+                        System.out.println("Error editing tool");
+                    }
+
+
+                }
+                case (4) -> {
+                    System.out.println("Please enter the barcode of the tool you would like to add a category to: ");
+                    String barcode = scanner.nextLine();
+                    System.out.println("Please enter the category(ies) to add it to. " +
+                            "If entering multiple, please separate with a ',': ");
+                    String userInput = scanner.nextLine();
+                    String[] str = userInput.split(",");
+                    try {
+                        Statement statement = this.connection.createStatement();
+                        for (String s : str) {
+                            String addCategory = String.format("INSERT INTO \"Tool Categories\" VALUES ('%s', '%s')", barcode, s);
+                            statement.executeUpdate(addCategory);
+                        }
+
+                    } catch (SQLException e) {
+                        System.out.println("Error with Adding barcode");
+                    }
                 }
             }
         }
+        runApplication();
 
     }
 
