@@ -83,11 +83,11 @@ public class Application {
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
         String input = "0";
         while ( Integer.parseInt(input) < 5) {
+            Tools tool = new Tools(connection);
+            printMangeTool();
+            input = scanner.nextLine();
             switch (Integer.parseInt(input)) {
-                printMangeTool();
-                input = scanner.nextLine();
                 case (1) -> {
-                    Tools tool = new Tools(connection);
                     System.out.println("Please enter your the barcode number for the tool to add");
                     String barcode = scanner.nextLine();
                     System.out.println("Please enter a name for you tool");
@@ -104,7 +104,6 @@ public class Application {
 
                 }
                 case (2) -> {
-                    Tools tool = new Tools(connection);
                     System.out.println("Please enter your the barcode number for the tool to delete");
                     String value = scanner.nextLine();
                     tool.deleteTool(value);
