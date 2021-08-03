@@ -56,6 +56,5 @@ public class ToolSearch {
             System.out.println();
         }
         resultSet.close();
-        connection.close();
     }
 }

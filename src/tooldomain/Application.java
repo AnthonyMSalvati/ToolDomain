@@ -191,19 +191,20 @@ public class Application {
         System.out.println("-----------------------------");
         System.out.println("How would you like to search?");
         System.out.println("-----------------------------");
-        System.out.println("1. By Barcode \t 2. By Name");
-        System.out.println("3. By Category \t 4. return to Main menu");
+        System.out.println("1. By Barcode \t 2. By Category");
+        System.out.println("3. By Name \t 4. return to Main menu");
     }
 
     public void searchForTools() throws SQLException, ClassNotFoundException, InterruptedException {
 
         Scanner scanner = new Scanner(new InputStreamReader(System.in));
-        String input = "0";
-        while( Integer.parseInt(input) < 4 ) {
+        String check = "0";
+        String input = "";
+        while( Integer.parseInt(check) < 4 ) {
             printMenuSearch();
-            input = scanner.nextLine();
+            check = scanner.nextLine();
             String order = "";
-            switch (Integer.parseInt(input)) {
+            switch (Integer.parseInt(check)) {
                 case (1) -> {
                     System.out.println("Please enter the barcode of the tool you would like to find: ");
                     input = scanner.nextLine();
